@@ -2,6 +2,7 @@
 
 import { Injectable } from "@nestjs/common";
 import { UserRepository } from "./user.repository";
+import { sha256 } from "src/util/crypto/hash.util";
 
 export type UserDto={
     email: string;
@@ -14,7 +15,8 @@ export class UserService {
 
     async registerUser(email:string, name:string, password:string):Promise<UserDto|void>{
         console.log("Aqui hacemos el hash del password")
-        return this.userRepository.registerUser(email, name, password);
+        const hashedPassword = sha256(password);
+        return this.userRepository.registerUser(email, name, hashedPassword);
     }
 
 }

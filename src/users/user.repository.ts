@@ -21,6 +21,19 @@ export class UserRepository{
         const sql= `INSERT INTO users (email,name,password_hash,salt) VALUES ('${email}','${name}','${password}','saltTest')`;
         await this.dbService.getPool().query(sql);
     }
+
+    async findByEmail(email:string):Promise<User>{
+        const sql= `SELECT * FROM users WHERE email='${email}' LIMIT 1`;
+        const [rows]= await this.dbService.getPool().query(sql);
+        const result= rows as User[];
+        return result[0];
+    }
+    async findById(id:number):Promise<User>{
+        const sql= `SELECT * FROM users WHERE id='${id}' LIMIT 1`;
+        const [rows]= await this.dbService.getPool().query(sql);
+        const result= rows as User[];
+        return result[0];
+    }
 }
 
 

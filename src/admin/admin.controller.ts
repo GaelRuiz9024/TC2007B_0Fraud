@@ -2,24 +2,23 @@ import { Body, Controller, Post, Put, Req, UseGuards, Param, Get } from "@nestjs
 import { AdminDto, AdminService } from "./admin.service";
 import { ApiProperty, ApiResponse, ApiTags, ApiBearerAuth } from "@nestjs/swagger";
 import { JwtAuthGuard } from "src/common/guards/jwt-auth.guard";
-import type { AuthenticatedRequest } from "src/common/interfaces/authenticated-request";
 
 export class CreateAdminDto{
-    @ApiProperty({example:"user@example.com", description:"Email del administrador"})
-    email: string;
+    @ApiProperty({example:"user@example.com", description:"correo del administrador"})
+    correo: string;
     @ApiProperty({example:"Usuario Ejemplo", description:"Nombre del administrador", required:false})
-    name: string;
-    @ApiProperty({example:"password123", description:"Contraseña del administrador"})
-    password: string;
+    nombre: string;
+    @ApiProperty({example:"contrasena123", description:"Contraseña del administrador"})
+    contrasena: string;
 }
 
 export class UpdateUserDto{
-    @ApiProperty({example:"newemail@example.com", description:"Nuevo email del administrador", required: false})
-    email?: string;
+    @ApiProperty({example:"newcorreo@example.com", description:"Nuevo correo del administrador", required: false})
+    correo?: string;
     @ApiProperty({example:"Nuevo Nombre", description:"Nuevo nombre del administrador", required: false})
-    name?: string;
-    @ApiProperty({example:"newpassword123", description:"Nueva contraseña del administrador", required: false})
-    password?: string;
+    nombre?: string;
+    @ApiProperty({example:"newcontrasena123", description:"Nueva contraseña del administrador", required: false})
+    contrasena?: string;
 }
 
 @ApiTags("Endpoints de Administradores")
@@ -29,9 +28,16 @@ export class adminController{
     @Post()
     @ApiResponse({status: 201, description: "Cuenta de administrador creada exitosamente"})
     @ApiResponse({status: 500, description: "Error interno del servidor"})
-    async registerUser(@Body() userDto: CreateAdminDto): Promise<AdminDto|void> {
-        return this.adminService.registerAdmin(userDto.email, userDto.name, userDto.password);
+    async registerUser(@Body() userDto: CreateAdminDto): Promise<AdminDto | void> {
+        const admin = await this.adminService.registerAdmin(userDto.correo, userDto.nombre, userDto.contrasena);
+        if (!admin) return;
+
+        return {
+            correo: admin.correo,
+            nombre: admin.nombre
+        };
     }
+
 
     @Put(":id")
     @UseGuards(JwtAuthGuard)
@@ -51,9 +57,11 @@ export class adminController{
     @ApiResponse({status: 200, description: "Lista de usuarios obtenida exitosamente"})
     @ApiResponse({status: 401, description: "No autorizado"})
     @ApiResponse({status: 500, description: "Error interno del servidor"})
-    async getAllUsers():Promise<AdminDto>{
+ 
+    async getAllUsers(): Promise<AdminDto[]> {
         return this.adminService.getAllUsers();
     }
+
 
     @Get("user/:id")
     @UseGuards(JwtAuthGuard)

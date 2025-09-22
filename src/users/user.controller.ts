@@ -7,21 +7,21 @@ import { JwtAuthGuard } from "src/common/guards/jwt-auth.guard";
 import type { AuthenticatedRequest } from "src/common/interfaces/authenticated-request";
 
 export class CreateUserDto{
-    @ApiProperty({example:"user@example.com", description:"Email del usuario"})
-    email: string;
+    @ApiProperty({example:"user@example.com", description:"correo del usuario"})
+    correo: string;
     @ApiProperty({example:"Usuario Ejemplo", description:"Nombre del usuario", required:false})
-    name: string;
-    @ApiProperty({example:"password123", description:"Contraseña del usuario"})
-    password: string;
+    nombre: string;
+    @ApiProperty({example:"contrsaena123", description:"Contraseña del usuario"})
+    contrasena: string;
 }
 
 export class UpdateUserDto{
-    @ApiProperty({example:"newemail@example.com", description:"Nuevo email del usuario", required: false})
-    email?: string;
+    @ApiProperty({example:"newcorreo@example.com", description:"Nuevo correo del usuario", required: false})
+    correo?: string;
     @ApiProperty({example:"Nuevo Nombre", description:"Nuevo nombre del usuario", required: false})
-    name?: string;
-    @ApiProperty({example:"newpassword123", description:"Nueva contraseña del usuario", required: false})
-    password?: string;
+    nombre?: string;
+    @ApiProperty({example:"newcontrsaena123", description:"Nueva contraseña del usuario", required: false})
+    contrasena?: string;
 }
 
 @ApiTags("Endpoints de Usuarios")
@@ -33,7 +33,7 @@ export class UserController{
     @ApiResponse({status: 201, description: "Usuario creado exitosamente"})
     @ApiResponse({status: 500, description: "Error interno del servidor"})
     async registerUser(@Body() userDto: CreateUserDto): Promise<UserDto|void> {
-        return this.userService.registerUser(userDto.email, userDto.name, userDto.password);
+        return this.userService.registerUser(userDto.correo, userDto.nombre, userDto.contrasena);
     }
 
     @Put()

@@ -3,32 +3,33 @@
 import { Injectable, NotFoundException, UnauthorizedException } from "@nestjs/common";
 import { User, UserRepository } from "./user.repository";
 import { sha256 } from "src/util/crypto/hash.util";
+import { hash } from "crypto";
 
 export type UserDto={
-    email: string;
-    name: string;
+    correo: string;
+    nombre: string;
 }
 
 export interface UpdateUserData {
-    email?: string;
-    name?: string;
-    password?: string;
+    correo?: string;
+    nombre?: string;
+    contrasena?: string;
 }
 
 @Injectable()
 export class UserService {
     constructor(private readonly userRepository: UserRepository) {}
 
-    async registerUser(email:string, name:string, password:string):Promise<UserDto|void>{
-        console.log("Aqui hacemos el hash del password")
-        const hashedPassword = sha256(password);
-        return this.userRepository.registerUser(email, name, hashedPassword);
+    async registerUser(correo:string, nombre:string, contrasena:string):Promise<UserDto|void>{
+        console.log("Aqui hacemos el hash del contrasena")
+        const hashedcontrasena = sha256(contrasena);
+        return this.userRepository.registerUser(correo, nombre, hashedcontrasena);
     }
 
-    async login(email:string, password:string):Promise<User>{
-        const user= await this.userRepository.findByEmail(email);
+    async login(correo:string, contrasena:string):Promise<User>{
+        const user= await this.userRepository.findByEmail(correo);
         if(!user) throw Error("Usuario no encontrado");
-        if(user.password_hash !== sha256(password)){
+        if(user.contrasenaHash !== sha256(contrasena)){
             throw new UnauthorizedException("Contraseña incorrecta");
         }
         return user;
@@ -48,23 +49,23 @@ export class UserService {
         // Preparar los datos a actualizar
         const dataToUpdate: any = {};
         
-        if (updateData.email !== undefined) {
-            dataToUpdate.email = updateData.email;
+        if (updateData.correo !== undefined) {
+            dataToUpdate.correo = updateData.correo;
         }
         
-        if (updateData.name !== undefined) {
-            dataToUpdate.name = updateData.name;
+        if (updateData.correo !== undefined) {
+            dataToUpdate.nombre = updateData.nombre;
         }
         
-        if (updateData.password !== undefined) {
-            dataToUpdate.password_hash = sha256(updateData.password);
+        if (updateData.contrasena !== undefined) {
+            dataToUpdate.contrasena_hash = sha256(updateData.contrasena);
         }
 
         // Si no hay datos para actualizar, retornar los datos actuales
         if (Object.keys(dataToUpdate).length === 0) {
             return {
-                email: existingUser.email,
-                name: existingUser.name
+                correo: existingUser.correo,
+                nombre: existingUser.nombre
             };
         }
 
@@ -72,8 +73,8 @@ export class UserService {
         const updatedUser = await this.userRepository.updateUser(id, dataToUpdate);
         
         return {
-            email: updatedUser.email,
-            name: updatedUser.name
+            correo: updatedUser.correo,
+            nombre: updatedUser.nombre
         };
     }
 }

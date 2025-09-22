@@ -4,9 +4,9 @@ import { UserRepository, User } from "src/users/user.repository";
 
 export type Admin= {
     id: number;
-    email: string;
-    name: string;
-    password_hash: string;
+    correo: string;
+    nombre: string;
+    contrasenaHash: string;
     salt: string;
 }
 
@@ -16,10 +16,10 @@ export class AdminRepository{
         private readonly dbService: DbService,
         private readonly userRepo: UserRepository
     ) {}
-    async  registerAdmin(email:string, 
-        name:string, password:string):Promise<Admin|void>{
-        const sql= `INSERT INTO users (email,name,password_hash,salt,user_type) VALUES (?,?,?,'saltTest', 1)`;
-        await this.dbService.getPool().query(sql, [email, name, password]);
+    async  registerAdmin(correo:string, 
+        nombre:string, contrasena:string):Promise<Admin|void>{
+        const sql= `INSERT INTO usuario (correo,nombre,contraseñaHash,salt,idRol) VALUES (?,?,?,'saltTest', 1)`;
+        await this.dbService.getPool().query(sql, [correo, nombre, contrasena]);
     }
 
     async updateUserAdmin(id: number, updateData: Partial<User>): Promise<User> {
@@ -32,7 +32,7 @@ export class AdminRepository{
         }
 
         const setClause = fields.map(field => `${field}=?`).join(', ');
-        const sql = `UPDATE users SET ${setClause} WHERE id=?`;
+        const sql = `UPDATE usuario SET ${setClause} WHERE id=?`;
         
         // Agregar el ID al final de los valores
         values.push(id);
@@ -43,15 +43,17 @@ export class AdminRepository{
         return this.userRepo.findById(id);
     }
 
-    async getAllUsers():Promise<User>{
-        const sql= `SELECT * FROM users WHERE user_type=0`;
-        const [rows]= await this.dbService.getPool().query(sql, []);
-        const result= rows as User[];
-        return result[0];
+    async getAllUsers(): Promise<User[]> {
+        const sql = `SELECT * FROM usuario WHERE idRol=2`;
+        const [rows] = await this.dbService.getPool().query(sql, []);
+        return rows as User[]; // ✅ Devuelve todos los usuarios
     }
+
+
+
     
     async findById(id:number):Promise<User>{
-        const sql= `SELECT * FROM users WHERE id=? LIMIT 1`;
+        const sql= `SELECT * FROM usuario WHERE id=? LIMIT 1`;
         const [rows]= await this.dbService.getPool().query(sql, [id]);
         const result= rows as User[];
         return result[0];

@@ -4,8 +4,8 @@ import { UpdateUserData,UserService,UserDto } from "src/users/user.service";
 import { sha256 } from "src/util/crypto/hash.util";
 
 export type AdminDto={
-    email: string;
-    name: string;
+    correo: string;
+    nombre: string;
 }
 
 @Injectable()
@@ -14,17 +14,17 @@ export class AdminService {
         private readonly adminRepository: AdminRepository,
         private readonly userDto: UserService
     ) {}
-    async registerAdmin(email:string, name:string, password:string):Promise<Admin|void>{
-        console.log("Aqui hacemos el hash del password")
-        const hashedPassword = sha256(password);
-        return this.adminRepository.registerAdmin(email, name, hashedPassword);
+    async registerAdmin(correo: string, nombre: string, contrasena: string): Promise<Admin | void> {
+        console.log("Aqui hacemos el hash del contrasena");
+        const hashedcontrasena = sha256(contrasena);
+        return this.adminRepository.registerAdmin(correo, nombre, hashedcontrasena);
     }
 
     async findById(id:number):Promise<UserDto>{
         return this.adminRepository.findById(id);
     }
 
-    async getAllUsers():Promise<UserDto>{
+    async getAllUsers():Promise<UserDto[]>{
         return this.adminRepository.getAllUsers();
     }
     async updateUserAdmin(id: number, updateData: Partial<UpdateUserData>): Promise<AdminDto> {
@@ -37,14 +37,14 @@ export class AdminService {
         // Preparar los datos a actualizar
         const dataToUpdate: any = {};
 
-        if (updateData.email !== undefined) {
-            dataToUpdate.email = updateData.email;
+        if (updateData.correo !== undefined) {
+            dataToUpdate.correo = updateData.correo;
         }
-        if (updateData.name !== undefined) {
-            dataToUpdate.name = updateData.name;
+        if (updateData.nombre !== undefined) {
+            dataToUpdate.nombre = updateData.nombre;
         }   
-        if (updateData.password !== undefined) {
-            dataToUpdate.password_hash = sha256(updateData.password);
+        if (updateData.contrasena !== undefined) {
+            dataToUpdate.contrasena_hash = sha256(updateData.contrasena);
         }
         return this.userDto.updateUser(id, dataToUpdate);
     }

@@ -2,6 +2,7 @@ import { Body, Controller, Post, Put, Req, UseGuards, Param, Get } from "@nestjs
 import { AdminDto, AdminService } from "./admin.service";
 import { ApiProperty, ApiResponse, ApiTags, ApiBearerAuth } from "@nestjs/swagger";
 import { JwtAuthGuard } from "src/common/guards/jwt-auth.guard";
+import { IsAdminGuard } from "src/common/guards/is-admin.guard";
 
 export class CreateAdminDto{
     @ApiProperty({example:"user@example.com", description:"correo del administrador"})
@@ -40,7 +41,7 @@ export class adminController{
 
 
     @Put(":id")
-    @UseGuards(JwtAuthGuard)
+    @UseGuards(IsAdminGuard)
     @ApiBearerAuth()
     @ApiResponse({status: 200, description: "usuario actualizado exitosamente"})
     @ApiResponse({status: 401, description: "No autorizado"})
@@ -52,7 +53,7 @@ export class adminController{
     }
 
     @Get("user/list")
-    @UseGuards(JwtAuthGuard)
+    @UseGuards(IsAdminGuard)
     @ApiBearerAuth()
     @ApiResponse({status: 200, description: "Lista de usuarios obtenida exitosamente"})
     @ApiResponse({status: 401, description: "No autorizado"})
@@ -64,7 +65,7 @@ export class adminController{
 
 
     @Get("user/:id")
-    @UseGuards(JwtAuthGuard)
+    @UseGuards(IsAdminGuard)
     @ApiBearerAuth()
     @ApiResponse({status: 200, description: "Usuario obtenido exitosamente"})
     @ApiResponse({status: 401, description: "No autorizado"})

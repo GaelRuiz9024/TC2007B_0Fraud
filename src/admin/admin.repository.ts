@@ -18,7 +18,7 @@ export class AdminRepository{
     ) {}
     async  registerAdmin(correo:string, 
         nombre:string, contrasena:string):Promise<Admin|void>{
-        const sql= `INSERT INTO usuario (correo,nombre,contraseñaHash,salt,idRol) VALUES (?,?,?,'saltTest', 1)`;
+        const sql= `INSERT INTO usuario (correo,nombre,contrasenaHash,salt,idRol) VALUES (?,?,?,'saltTest', 1)`;
         await this.dbService.getPool().query(sql, [correo, nombre, contrasena]);
     }
 

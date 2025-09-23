@@ -18,7 +18,7 @@ export class AuthController{
         const usuario= await this.userService.login(dto.correo, dto.contrasena);
         if(!usuario)
             throw Error("Usuario no encontrado");
-        const userProfile = {id: usuario.id.toString(), correo: usuario.correo, nombre: usuario.nombre};
+        const userProfile = {id: usuario.id.toString(), correo: usuario.correo, nombre: usuario.nombre, idRol: usuario.idRol};
         const accessToken = await this.tokenService.generateAccess(userProfile);
         const refreshToken= await this.tokenService.generateRefresh(usuario.id.toString());
         return { accessToken, refreshToken };
@@ -37,7 +37,7 @@ export class AuthController{
             const profile= await this.tokenService.verifyRefresh(dto.refreshToken);
             const user= await this.userService.findById(Number(profile.sub));
             if(!user) throw Error("Usuario no encontrado");
-            const newAccessToken = await this.tokenService.generateAccess({id: user.id.toString(), correo: user.correo, nombre: user.nombre});
+            const newAccessToken = await this.tokenService.generateAccess({id: user.id.toString(), correo: user.correo, nombre: user.nombre, idRol: user.idRol});
             return {accessToken: newAccessToken};
         }catch{
             throw Error("Token de refresco inválido");

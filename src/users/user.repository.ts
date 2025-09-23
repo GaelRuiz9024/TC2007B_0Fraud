@@ -10,6 +10,7 @@ export type User= {
     nombre: string;
     contrasenaHash: string;
     salt: string;
+    idRol: number; 
 }
 
 

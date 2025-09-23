@@ -7,6 +7,7 @@ export type UserProfile ={
     id:string, 
     correo:string,
     nombre:string
+    idRol: number; 
 }
 
 export type AccessPayload={

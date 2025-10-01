@@ -48,4 +48,22 @@ export class AdminService {
         }
         return this.userDto.updateUser(id, dataToUpdate);
     }
+
+     async updateRole(id: number, idRol: number): Promise<UserDto> {
+        const existingUser = await this.adminRepository.findById(id);
+        if (!existingUser) {
+            throw new NotFoundException(`Usuario con ID ${id} no encontrado`);
+        }
+        
+        // El AdminRepository ya tiene un método para actualizar, lo estoy reutilizando para el rol
+       return this.adminRepository.updateUserAdmin(id, { idRol });
+    }
+
+    async deleteUser(id: number): Promise<void> {
+        const existingUser = await this.adminRepository.findById(id);
+        if (!existingUser) {
+            throw new NotFoundException(`Usuario con ID ${id} no encontrado`);
+        }
+        await this.adminRepository.deleteUser(id);
+    }
 }

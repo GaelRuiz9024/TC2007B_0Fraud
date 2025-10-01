@@ -1,8 +1,9 @@
-import { Body, Controller, Post, Put, Req, UseGuards, Param, Get } from "@nestjs/common";
+import { Body, Controller, Post, Put, Req, Delete, UseGuards, Param, Get } from "@nestjs/common";
 import { AdminDto, AdminService } from "./admin.service";
-import { ApiProperty, ApiResponse, ApiTags, ApiBearerAuth } from "@nestjs/swagger";
+import { ApiProperty, ApiResponse, ApiTags, ApiBearerAuth, ApiOperation } from "@nestjs/swagger";
 import { JwtAuthGuard } from "src/common/guards/jwt-auth.guard";
 import { IsAdminGuard } from "src/common/guards/is-admin.guard";
+import { IsIn, IsInt, IsNotEmpty } from "class-validator";
 
 export class CreateAdminDto{
     @ApiProperty({example:"user@example.com", description:"correo del administrador"})
@@ -13,7 +14,7 @@ export class CreateAdminDto{
     contrasena: string;
 }
 
-export class UpdateUserDto{
+export class AdminUpdateUserDto{
     @ApiProperty({example:"newcorreo@example.com", description:"Nuevo correo del administrador", required: false})
     correo?: string;
     @ApiProperty({example:"Nuevo Nombre", description:"Nuevo nombre del administrador", required: false})
@@ -21,7 +22,13 @@ export class UpdateUserDto{
     @ApiProperty({example:"newcontrasena123", description:"Nueva contraseña del administrador", required: false})
     contrasena?: string;
 }
-
+export class UpdateUserRoleDto {
+    @ApiProperty({ example: 2, description: 'Nuevo ID de Rol (1: Admin, 2: User)', enum: [1, 2] })
+    @IsNotEmpty()
+    @IsInt()
+    @IsIn([1, 2])
+    idRol: number;
+}
 @ApiTags("Endpoints de Administradores")
 @Controller("admin")
 export class adminController{
@@ -40,17 +47,36 @@ export class adminController{
     }
 
 
-    @Put(":id")
+    @Put("user/:id")
     @UseGuards(IsAdminGuard)
     @ApiBearerAuth()
     @ApiResponse({status: 200, description: "usuario actualizado exitosamente"})
     @ApiResponse({status: 401, description: "No autorizado"})
     @ApiResponse({status: 404, description: "Usuario no encontrado"})
     @ApiResponse({status: 500, description: "Error interno del servidor"})
-    async updateUser( @Param("id") id: string, @Body() updateDto: UpdateUserDto): Promise<AdminDto> {
+    async updateUser( @Param("id") id: string, @Body() updateDto: AdminUpdateUserDto): Promise<AdminDto> {
         const userId = Number(id);
         return this.adminService.updateUserAdmin(userId, updateDto);
     }
+
+    @Put("user/:id/role")
+    @ApiOperation({ summary: 'Actualizar el rol de un usuario por ID (Admin)' })
+    @ApiResponse({status: 200, description: "Rol de usuario actualizado exitosamente"})
+    @ApiResponse({status: 404, description: "Usuario no encontrado"})
+    async updateRole(@Param("id") id: string, @Body() updateRoleDto: UpdateUserRoleDto): Promise<AdminDto> {
+        const userId = Number(id);
+        return this.adminService.updateRole(userId, updateRoleDto.idRol);
+    }
+    
+    @Delete("user/:id")
+    @ApiOperation({ summary: 'Eliminar un usuario por ID (Admin)' })
+    @ApiResponse({status: 204, description: "Usuario eliminado exitosamente"})
+    @ApiResponse({status: 404, description: "Usuario no encontrado"})
+    async deleteUser(@Param("id") id: string): Promise<void> {
+        const userId = Number(id);
+        await this.adminService.deleteUser(userId);
+    }
+    
 
     @Get("user/list")
     @UseGuards(IsAdminGuard)

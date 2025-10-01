@@ -44,13 +44,14 @@ export class AdminRepository{
     }
 
     async getAllUsers(): Promise<User[]> {
-        const sql = `SELECT * FROM usuario WHERE idRol=2`;
+        const sql = `SELECT * FROM usuario WHERE idRol=2 AND activo=1`;
         const [rows] = await this.dbService.getPool().query(sql, []);
         return rows as User[]; // ✅ Devuelve todos los usuarios
     }
-
-
-
+    async deleteUser(id: number): Promise<void> {
+        const sql = `UPDATE usuario SET activo=0 WHERE id=?`; 
+        await this.dbService.getPool().query(sql, [id]);
+    }
     
     async findById(id:number):Promise<User>{
         const sql= `SELECT * FROM usuario WHERE id=? LIMIT 1`;

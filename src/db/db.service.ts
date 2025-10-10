@@ -11,7 +11,7 @@ export class DbService implements OnModuleInit, OnModuleDestroy{
         this.pool = createPool({
             host: 'localhost',
             user: 'root',
-            password: 'Boni902490.',
+            password: 'Contrasena123.',
             database: 'ciberseguridaddb',
         })
     }

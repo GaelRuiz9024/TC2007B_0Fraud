@@ -8,6 +8,7 @@ export type User= {
     id: number;
     correo: string;
     nombre: string;
+    apellidos: string;
     contrasenaHash: string;
     salt: string;
     idRol: number; 
@@ -19,9 +20,9 @@ export class UserRepository{
     constructor(private readonly dbService: DbService) {}
 
     async registerUser(correo:string, 
-        nombre:string, contrasena:string):Promise<User|void>{
-        const sql= `INSERT INTO usuario (correo,nombre,contrasenaHash,salt) VALUES (?,?,?,'saltTest')`;
-        await this.dbService.getPool().query(sql, [correo, nombre, contrasena]);
+        nombre:string, apellidos:string, contrasena:string):Promise<User|void>{
+        const sql= `INSERT INTO usuario (correo,nombre,apellidos,contrasenaHash,salt) VALUES (?,?,?,?,'saltTest')`;
+        await this.dbService.getPool().query(sql, [correo, nombre,apellidos, contrasena]);
     }
 
     async findByEmail(correo:string):Promise<User>{

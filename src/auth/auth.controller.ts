@@ -18,7 +18,7 @@ export class AuthController{
         const usuario= await this.userService.login(dto.correo, dto.contrasena);
         if(!usuario)
             throw Error("Usuario no encontrado");
-        const userProfile = {id: usuario.id.toString(), correo: usuario.correo, nombre: usuario.nombre, idRol: usuario.idRol};
+        const userProfile = {id: usuario.id.toString(), correo: usuario.correo, nombre: usuario.nombre, apellidos: usuario.apellidos,idRol: usuario.idRol};
         const accessToken = await this.tokenService.generateAccess(userProfile);
         const refreshToken= await this.tokenService.generateRefresh(usuario.id.toString());
         return { accessToken, refreshToken };

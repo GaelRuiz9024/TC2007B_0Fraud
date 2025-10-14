@@ -14,10 +14,10 @@ export class AdminService {
         private readonly adminRepository: AdminRepository,
         private readonly userDto: UserService
     ) {}
-    async registerAdmin(correo: string, nombre: string, contrasena: string): Promise<Admin | void> {
+    async registerAdmin(correo: string, nombre: string, apellidos:string, contrasena: string): Promise<Admin | void> {
         console.log("Aqui hacemos el hash del contrasena");
         const hashedcontrasena = sha256(contrasena);
-        return this.adminRepository.registerAdmin(correo, nombre, hashedcontrasena);
+        return this.adminRepository.registerAdmin(correo, nombre, apellidos, hashedcontrasena);
     }
 
     async findById(id:number):Promise<UserDto>{

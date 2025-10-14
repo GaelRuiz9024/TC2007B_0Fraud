@@ -6,6 +6,7 @@ export type Admin= {
     id: number;
     correo: string;
     nombre: string;
+    apellidos: string;
     contrasenaHash: string;
     salt: string;
 }
@@ -17,9 +18,9 @@ export class AdminRepository{
         private readonly userRepo: UserRepository
     ) {}
     async  registerAdmin(correo:string, 
-        nombre:string, contrasena:string):Promise<Admin|void>{
-        const sql= `INSERT INTO usuario (correo,nombre,contrasenaHash,salt,idRol) VALUES (?,?,?,'saltTest', 1)`;
-        await this.dbService.getPool().query(sql, [correo, nombre, contrasena]);
+        nombre:string, apellidos:string,contrasena:string):Promise<Admin|void>{
+        const sql= `INSERT INTO usuario (correo,nombre,apellidos,contrasenaHash,salt,idRol) VALUES (?,?,?,?,'saltTest', 1)`;
+        await this.dbService.getPool().query(sql, [correo, nombre,apellidos, contrasena]);
     }
 
     async updateUserAdmin(id: number, updateData: Partial<User>): Promise<User> {

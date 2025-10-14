@@ -11,6 +11,8 @@ export class CreateUserDto{
     correo: string;
     @ApiProperty({example:"Usuario Ejemplo", description:"Nombre del usuario", required:false})
     nombre: string;
+    @ApiProperty({example:"Apellido Ejemplo", description:"Apellidos del usuario", required:false})
+    apellidos: string;
     @ApiProperty({example:"contrsaena123", description:"Contraseña del usuario"})
     contrasena: string;
 }
@@ -20,6 +22,8 @@ export class UpdateUserDto{
     correo?: string;
     @ApiProperty({example:"Nuevo Nombre", description:"Nuevo nombre del usuario", required: false})
     nombre?: string;
+    @ApiProperty({example:"Apellido Ejemplo", description:"Apellidos del usuario", required:false})
+    apellidos?: string;
     @ApiProperty({example:"newcontrsaena123", description:"Nueva contraseña del usuario", required: false})
     contrasena?: string;
 }
@@ -33,7 +37,7 @@ export class UserController{
     @ApiResponse({status: 201, description: "Usuario creado exitosamente"})
     @ApiResponse({status: 500, description: "Error interno del servidor"})
     async registerUser(@Body() userDto: CreateUserDto): Promise<UserDto|void> {
-        return this.userService.registerUser(userDto.correo, userDto.nombre, userDto.contrasena);
+        return this.userService.registerUser(userDto.correo, userDto.nombre, userDto.apellidos, userDto.contrasena);
     }
 
     @Put()

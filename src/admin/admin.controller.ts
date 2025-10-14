@@ -10,6 +10,8 @@ export class CreateAdminDto{
     correo: string;
     @ApiProperty({example:"Usuario Ejemplo", description:"Nombre del administrador", required:false})
     nombre: string;
+    @ApiProperty({example:"Apellido Ejemplo", description:"Apellidos del administrador", required:false})
+    apellidos: string;
     @ApiProperty({example:"contrasena123", description:"Contraseña del administrador"})
     contrasena: string;
 }
@@ -19,6 +21,8 @@ export class AdminUpdateUserDto{
     correo?: string;
     @ApiProperty({example:"Nuevo Nombre", description:"Nuevo nombre del administrador", required: false})
     nombre?: string;
+    @ApiProperty({example:"Apellido Ejemplo", description:"Apellidos del administrador", required:false})
+    apellidos?: string;
     @ApiProperty({example:"newcontrasena123", description:"Nueva contraseña del administrador", required: false})
     contrasena?: string;
 }
@@ -37,12 +41,12 @@ export class adminController{
     @ApiResponse({status: 201, description: "Cuenta de administrador creada exitosamente"})
     @ApiResponse({status: 500, description: "Error interno del servidor"})
     async registerUser(@Body() userDto: CreateAdminDto): Promise<AdminDto | void> {
-        const admin = await this.adminService.registerAdmin(userDto.correo, userDto.nombre, userDto.contrasena);
+        const admin = await this.adminService.registerAdmin(userDto.correo, userDto.nombre, userDto.apellidos, userDto.contrasena);
         if (!admin) return;
 
         return {
             correo: admin.correo,
-            nombre: admin.nombre
+            nombre: admin.nombre,
         };
     }
 

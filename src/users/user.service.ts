@@ -8,6 +8,7 @@ import { hash } from "crypto";
 export type UserDto={
     correo: string;
     nombre: string;
+    apellidos: string;
 }
 
 export interface UpdateUserData {
@@ -20,10 +21,10 @@ export interface UpdateUserData {
 export class UserService {
     constructor(private readonly userRepository: UserRepository) {}
 
-    async registerUser(correo:string, nombre:string, contrasena:string):Promise<UserDto|void>{
+    async registerUser(correo:string, nombre:string,apellidos:string, contrasena:string):Promise<UserDto|void>{
         console.log("Aqui hacemos el hash del contrasena")
         const hashedcontrasena = sha256(contrasena);
-        return this.userRepository.registerUser(correo, nombre, hashedcontrasena);
+        return this.userRepository.registerUser(correo, nombre,apellidos, hashedcontrasena);
     }
 
     async login(correo:string, contrasena:string):Promise<User>{
@@ -65,7 +66,8 @@ export class UserService {
         if (Object.keys(dataToUpdate).length === 0) {
             return {
                 correo: existingUser.correo,
-                nombre: existingUser.nombre
+                nombre: existingUser.nombre,
+                apellidos: existingUser.apellidos
             };
         }
 
@@ -74,7 +76,8 @@ export class UserService {
         
         return {
             correo: updatedUser.correo,
-            nombre: updatedUser.nombre
+            nombre: updatedUser.nombre,
+            apellidos: updatedUser.apellidos
         };
     }
 }

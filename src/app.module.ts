@@ -12,13 +12,15 @@ import { JwtModule } from '@nestjs/jwt';
 import { AdminModule } from './admin/admin.module';
 import { ReportModule } from './reports/report.module';
 import { CategoryModule } from './category/category.module';
+import { AnalyticsModule } from './analytics/analytics.module'; // 👈 **NUEVA IMPORTACIÓN**
+
 
 @Module({
   imports: [JwtModule.register({
       global: true,
-      secret:"supersecret"
+      secret:process.env.JWT_SECRET || 'supersecret',
   }), 
-  DbModule, UserModule, AuthModule, AdminModule,ReportModule,CategoryModule],
+  DbModule, UserModule, AuthModule, AdminModule,ReportModule,CategoryModule, AnalyticsModule], 
   controllers: [AppController],
   providers: [AppService],
 })

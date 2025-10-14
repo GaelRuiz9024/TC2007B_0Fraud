@@ -9,10 +9,10 @@ export class DbService implements OnModuleInit, OnModuleDestroy{
 
     onModuleInit():void {
         this.pool = createPool({
-            host: 'localhost',
-            user: 'root',
-            password: 'Contrasena123.',
-            database: 'ciberseguridaddb',
+           host: process.env.DB_HOST || 'localhost',
+            user: process.env.DB_USER || 'root',
+            password: process.env.DB_PASSWORD,
+            database: process.env.DB_NAME || 'ciberseguridaddb',
         })
     }
     onModuleDestroy() {

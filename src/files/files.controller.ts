@@ -5,6 +5,8 @@ import { diskStorage } from "multer";
 import { FileInterceptor } from "@nestjs/platform-express";
 import { join } from "path";
 
+const PORT = process.env.PORT ?? 4000;
+
 @Controller("files")
 export class FileController {
     @Post("upload")
@@ -18,6 +20,6 @@ export class FileController {
         })
     }))
     uploadFile(@UploadedFile() file:Express.Multer.File){
-        return {filename: file.filename, path: `http://localhost:3000/public/uploads/${file.filename}`};
+        return {filename: file.filename, path: `http://localhost:${PORT}/public/uploads/${file.filename}`};
     }
 }

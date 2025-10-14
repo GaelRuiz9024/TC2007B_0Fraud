@@ -11,7 +11,7 @@ export type Report = {
     urlPagina: string;
     fechaCreacion: Date;
     estado: string;
-    idAdmin: number | null;
+    idAdminAprobador: number | null; 
     fechaRevision: Date | null;
     idCategoria: number | null;
 }
@@ -37,7 +37,7 @@ export class ReportRepository {
     }
 
     async updateReportStatus(reportId: number, status: string, adminId: number): Promise<void> {
-        const sql = `UPDATE reporte SET estado = ?, idAdmin = ?, fechaRevision = NOW() WHERE id = ?`;
+        const sql = `UPDATE reporte SET estado = ?, idAdminAprobador = ?, fechaRevision = NOW() WHERE id = ?`;
         const params = [status, adminId, reportId];
         await this.dbService.getPool().query(sql, params);
     }

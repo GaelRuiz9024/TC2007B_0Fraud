@@ -20,7 +20,7 @@ export type RefreshPayload={
     sub:string,
     type:"refresh",
 }
-
+const JWT_SECRET= process.env.JWT_SECRET;
 @Injectable()
 export class TokenService{
     constructor (private readonly jwtService: JwtService) {}
@@ -31,7 +31,7 @@ export class TokenService{
             profile: profile
         },{
             expiresIn: "1m",
-            secret: "supersecret"
+            secret: JWT_SECRET
         })
     }
 
@@ -41,13 +41,13 @@ export class TokenService{
             type: "refresh"
         },{
             expiresIn: "7d",
-            secret: "supersecret"
+            secret: JWT_SECRET 
         })
     }
 
     async verifyAccess(token:string):Promise<AccessPayload>{
         const payload=await this.jwtService.verifyAsync<AccessPayload>(token,{
-            secret: "supersecret"
+            secret: JWT_SECRET
         });
         if(payload.type!=="access"){
             throw new Error("Invalid token type");
@@ -56,7 +56,7 @@ export class TokenService{
     }
     async verifyRefresh(token:string):Promise<RefreshPayload>{
         const payload=await this.jwtService.verifyAsync<RefreshPayload>(token,{
-            secret: "supersecret"
+            secret: JWT_SECRET
         });
         if(payload.type!=="refresh"){
             throw new Error("Invalid token type");

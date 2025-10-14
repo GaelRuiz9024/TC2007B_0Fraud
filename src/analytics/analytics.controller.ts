@@ -4,7 +4,7 @@ import { Controller, Get, Query, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { IsAdminGuard } from 'src/common/guards/is-admin.guard';
 import { AnalyticsService, StatusPecentage } from './analytics.service';
-import { ReportsByCategory, TopReportedSites } from './analytics.repository';
+import { ReportsByCategory, TopReportedSites, HistoricalReportData } from './analytics.repository'; 
 
 @ApiTags('Admin - Analíticas y Estadísticas')
 @ApiBearerAuth()
@@ -18,6 +18,13 @@ export class AnalyticsController {
     @ApiResponse({ status: 200, description: 'Datos de conteo de reportes por categoría.', type: [Object] })
     async getReportCategories(): Promise<ReportsByCategory[]> {
         return this.analyticsService.getReportsByCategory();
+    }
+
+    @Get('historical-trends')
+    @ApiOperation({ summary: 'Obtener datos de reportes por categoría a lo largo del tiempo (Últimos 7 días).' })
+    @ApiResponse({ status: 200, description: 'Datos históricos de reportes.', type: [Object] })
+    async getHistoricalTrends(): Promise<HistoricalReportData[]> {
+        return this.analyticsService.getHistoricalReportTrends();
     }
 
     @Get('top-sites')

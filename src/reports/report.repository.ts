@@ -14,11 +14,43 @@ export type Report = {
     idAdminAprobador: number | null; 
     fechaRevision: Date | null;
     idCategoria: number | null;
+    imagenes: string[];
+
+}
+
+type ReportImage = {
+    urlImagen: string;
 }
 
 @Injectable()
 export class ReportRepository {
     constructor(private readonly dbService: DbService) {}
+    private async getImagesForReport(reportId: number): Promise<string[]> {
+        const sql = `SELECT urlImagen FROM imagen_reporte WHERE idReporte = ? ORDER BY fechaSubida ASC`;
+        const [rows] = await this.dbService.getPool().query(sql, [reportId]);
+        const images = rows as ReportImage[];
+        return images.map(img => img.urlImagen);
+    }
+
+    private async enrichReportWithImages(report: any): Promise<Report> {
+        const images = await this.getImagesForReport(report.id);
+        return {
+            ...report,
+            imagenes: images,
+        } as Report;
+    }
+    
+    private async enrichReportsList(reports: any[]): Promise<Report[]> {
+        const enrichedReportsPromises = reports.map(report => this.enrichReportWithImages(report));
+        return Promise.all(enrichedReportsPromises);
+    }
+
+    async addImageToReport(reportId: number, imageUrl: string): Promise<void> {
+        const sql = `INSERT INTO imagen_reporte (idReporte, urlImagen, fechaSubida) VALUES (?, ?, NOW())`;
+        const params = [reportId, imageUrl];
+        await this.dbService.getPool().query(sql, params);
+    }
+    
     async createReport(report: CreateReportDto, userId: number): Promise<void> {
         const sql = `INSERT INTO reporte (idUsuario, titulo, descripcion, urlPagina, idCategoria, estado, fechaCreacion) VALUES (?, ?, ?, ?, ?, ?, NOW()) `;
         const params = [userId, report.titulo, report.descripcion, report.urlPagina, report.idCategoria || null, 'Pendiente'];
@@ -27,13 +59,16 @@ export class ReportRepository {
     async findReportsByUserId(userId: number): Promise<Report[]> {
         const sql = `SELECT * FROM reporte WHERE idUsuario = ?`;
         const [rows] = await this.dbService.getPool().query(sql, [userId]);
-        return rows as Report[];
+        const reports = rows as any[]; 
+
+        return this.enrichReportsList(reports);
     }
 
     async findAllReports(): Promise<Report[]> {
         const sql = `SELECT * FROM reporte`;
         const [rows] = await this.dbService.getPool().query(sql, []);
-        return rows as Report[];
+        const reports = rows as any[];
+        return this.enrichReportsList(reports);
     }
 
     async updateReportStatus(reportId: number, status: string, adminId: number): Promise<void> {

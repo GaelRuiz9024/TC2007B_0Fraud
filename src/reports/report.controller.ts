@@ -1,15 +1,21 @@
 /* eslint-disable prettier/prettier */
 
 
-import {Body, Controller, Get, Param, Post, Put, Req, UseGuards} from '@nestjs/common'
+import { Body, Controller, Get, Post, Put, Req, UseGuards, Param, UploadedFile, UseInterceptors, BadRequestException } from '@nestjs/common';
 import {ReportService} from './report.service'
-import { Report } from './report.repository'
-import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags, ApiProperty } from '@nestjs/swagger'
+import { Report, ReportRepository } from './report.repository';
+import { ApiBearerAuth, ApiOperation, ApiProperty, ApiResponse, ApiTags, ApiConsumes} from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard'
 import { IsAdminGuard } from 'src/common/guards/is-admin.guard'
 import type { AuthenticatedRequest } from 'src/common/interfaces/authenticated-request'
-import { IsNotEmpty, IsString,IsIn, IsUrl, IsOptional, IsNumber } from 'class-validator';
+import { IsIn, IsNotEmpty, IsNumber, IsOptional, IsString,IsUrl } from 'class-validator';
+import type { Request } from 'express'; // Importar Request de express
 
+
+// <--- NUEVAS IMPORTACIONES PARA IMAGENES --->
+import { FileInterceptor } from '@nestjs/platform-express';
+import { multerConfig } from 'src/config/multer.config'; // Importar la configuración de Multer
+import { join } from 'path'; // Para construir la URL de la imagen
 export class CreateReportDto {
   @ApiProperty({ example: 'Phishing en sitio web', description: 'Título del reporte' })
   @IsNotEmpty()
@@ -66,6 +72,38 @@ export class ReportController {
         const userId = Number(req.user.id)
         return this.reportService.getReportsByUserId(userId);
     }
+    @Post(':reportId/images')
+    @UseGuards(JwtAuthGuard) // Asegura que solo usuarios autenticados puedan subir imágenes
+    @UseInterceptors(FileInterceptor('image', multerConfig)) // 'image' es el nombre del campo del formulario
+    @ApiConsumes('multipart/form-data') // Especifica el tipo de contenido para Swagger
+    @ApiProperty({ type: 'string', format: 'binary', description: 'Archivo de imagen (.jpg, .jpeg, .png, .gif)' }) // Para Swagger
+    @ApiOperation({ summary: 'Subir una imagen a un reporte existente' })
+    @ApiResponse({ status: 201, description: 'Imagen subida y asociada al reporte exitosamente.' })
+    @ApiResponse({ status: 400, description: 'Solicitud inválida o archivo no permitido.' })
+    @ApiResponse({ status: 404, description: 'Reporte no encontrado.' })
+    async uploadImage(
+        @Param('reportId') reportId: string,
+        @UploadedFile() file: Express.Multer.File,
+        @Req() req: Request // Para obtener la URL base del servidor
+    ): Promise<{ message: string; imageUrl: string }> {
+        
+        if (!file) {
+        throw new BadRequestException('No se ha proporcionado ningún archivo de imagen.');
+        }
+
+        const numericReportId = Number(reportId);
+        if (isNaN(numericReportId)) {
+            throw new BadRequestException('El ID del reporte debe ser un número válido.');
+        }
+
+        const baseUrl = `${req.protocol}://${req.get('host')}`;
+        const imageUrl = `${baseUrl}/uploads/images/${file.filename}`;
+
+        await this.reportService.uploadReportImage(numericReportId, imageUrl);
+
+        return { message: 'Imagen subida exitosamente.', imageUrl };
+    }
+
 
     @Get('admin/all-reports')
     @UseGuards(IsAdminGuard)

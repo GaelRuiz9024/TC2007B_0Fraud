@@ -9,6 +9,8 @@ require('dotenv').config();
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import * as express from 'express'; // Importar express
+import { join } from 'path'; // Importar join
 
 async function bootstrap() {
   
@@ -17,6 +19,9 @@ async function bootstrap() {
     origin: 'http://localhost:3000', // O el puerto donde corra tu Next.js (generalmente 3000 por defecto)
     credentials: true,
   });
+
+  app.use('/uploads', express.static(join(__dirname, '..', 'uploads')));
+
   const config = new DocumentBuilder()
   .setTitle("API de Gestión de Usuarios")
   .setDescription("API para gestionar usuarios con autenticación JWT")
@@ -24,7 +29,6 @@ async function bootstrap() {
   .build();
   const doc = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup("docs", app, doc);
-  // process.env.PORT ya debería estar cargado aquí
   await app.listen(process.env.PORT ?? 4000); 
 }
 bootstrap();

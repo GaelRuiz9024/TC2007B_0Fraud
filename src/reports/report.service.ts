@@ -3,10 +3,14 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { Report, ReportRepository } from './report.repository';
 import { CreateReportDto } from './report.controller';
+import { DbService } from 'src/db/db.service';
+
 
 @Injectable()
 export class ReportService {
-  constructor(private readonly reportRepository: ReportRepository) {}
+  constructor(private readonly reportRepository: ReportRepository,
+              private readonly dbService: DbService
+) {}
 
   async createReport(userId: number, reportDto: CreateReportDto): Promise<void> {
     await this.reportRepository.createReport(reportDto, userId);
@@ -23,5 +27,13 @@ export class ReportService {
   async updateReportStatus(reportId: number, status: string, adminId: number): Promise<void> {
     // Aquí puedes agregar validaciones adicionales si lo deseas, como si el reporte existe
     await this.reportRepository.updateReportStatus(reportId, status, adminId);
+  }
+  async uploadReportImage(reportId: number, imageUrl: string): Promise<void> {
+    // Opcional: Verificar si el reporte existe antes de añadir la imagen
+    const reportExists = await this.dbService.getPool().query('SELECT id FROM reporte WHERE id = ?', [reportId]);
+    if (Array.isArray(reportExists[0]) && reportExists[0].length === 0) {
+      throw new NotFoundException(`Reporte con ID ${reportId} no encontrado para añadir la imagen.`);
+    }
+    await this.reportRepository.addImageToReport(reportId, imageUrl);
   }
 }

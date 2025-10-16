@@ -68,46 +68,32 @@ export class ReportRepository {
     //Endpoint 
     async searchReportsByKeyword(keyword: string): Promise<Report[]> {
         const sql = `
-            SELECT 
-                r.*, 
-                c.nombre AS categoriaNombre,
-                u.nombre AS autorNombre
-            FROM reporte r
-            LEFT JOIN categoria c ON r.idCategoria = c.id
-            LEFT JOIN usuario u ON r.idUsuario = u.id
-            WHERE (r.titulo LIKE ? 
-                OR r.descripcion LIKE ?
-                OR r.urlPagina LIKE ?
-                OR c.nombre LIKE ?)
-            AND r.estado = 'Aprobado'
-        `;
+    SELECT 
+        r.id,
+        r.titulo,
+        r.descripcion,
+        r.urlPagina AS url,
+        r.fechaCreacion,
+        r.estado,
+        c.nombre AS categoriaNombre,
+        u.nombre AS autorNombre,
+        u.apellidos AS autorApellidos
+    FROM reporte r
+    LEFT JOIN categoria c ON r.idCategoria = c.id
+    LEFT JOIN usuario u ON r.idUsuario = u.id
+    WHERE (
+        r.titulo LIKE ?
+        OR r.descripcion LIKE ?
+        OR r.urlPagina LIKE ?
+        OR c.nombre LIKE ?
+    )
+    AND r.estado = 'Aprobado'
+    `;
+
 
         const likeKeyword = `%${keyword}%`;
         const [rows] = await this.dbService.getPool().query(sql, [likeKeyword, likeKeyword, likeKeyword, likeKeyword]);
         return rows as Report[];
-}
-
-
-    //Por estado 
-    async countReportsByUser(userId: number): Promise<{ aprobado: number; pendiente: number; rechazado: number }> {
-    const sql = `
-        SELECT estado, COUNT(*) as total
-        FROM reporte
-        WHERE idUsuario = ?
-        GROUP BY estado
-    `;
-    const [rows] = await this.dbService.getPool().query(sql, [userId]);
-
-    const counts = { aprobado: 0, pendiente: 0, rechazado: 0 };
-
-    for (const row of rows as any[]) {
-        const estado = row.estado.toLowerCase();
-        if (estado === 'aprobado') counts.aprobado = row.total;
-        if (estado === 'pendiente') counts.pendiente = row.total;
-        if (estado === 'rechazado') counts.rechazado = row.total;
-    }
-
-    return counts;
 }
 
 }

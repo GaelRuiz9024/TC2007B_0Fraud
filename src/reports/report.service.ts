@@ -27,16 +27,21 @@ export class ReportService {
 
   // endpoints
   async mapReportToDto(report: ReportDetail): Promise<ReportDetailDto> {
+    const autorCompleto = report.autorNombre
+      ? `${report.autorNombre} ${report.autorApellido ?? ''}`.trim()
+      : 'Anónimo';
+    
     return {
       id: report.id,
       titulo: report.titulo,
-      autorNombre: `Usuario ${report.autorNombre}`,
-      categoriaNombre: report.categoriaNombre ? `Categoría ${report.categoriaNombre}` : 'Sin categoría',
+      autorNombre: autorCompleto,
+      categoriaNombre: report.categoriaNombre ?? 'Sin categoría',
       descripcion: report.descripcion,
       url: report.url,
-      imagenes: [],
+      imagenes: report.imagenes || [],
     };
   }
+
   async searchReports(keyword: string): Promise<Report[]> {
         return this.reportRepository.searchReportsByKeyword(keyword);
     }

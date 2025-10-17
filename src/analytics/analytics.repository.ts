@@ -68,8 +68,8 @@ export class AnalyticsRepository{
     async getTopReportedSites(limit: number = 5): Promise<TopReportedSites[]> {
         const sql = `
             SELECT 
-                r.urlPagina, 
-                COUNT(r.id) AS reportCount
+                urlPagina, 
+                COUNT(id) AS reportCount
             FROM 
                 reporte 
             GROUP BY

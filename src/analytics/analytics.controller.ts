@@ -3,17 +3,18 @@
 import { Controller, Get, Query, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { IsAdminGuard } from 'src/common/guards/is-admin.guard';
+import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
 import { AnalyticsService, StatusPecentage } from './analytics.service';
 import { ReportsByCategory, TopReportedSites, HistoricalReportData } from './analytics.repository'; 
 
 @ApiTags('Admin - Analíticas y Estadísticas')
 @ApiBearerAuth()
-@UseGuards(IsAdminGuard)
-@Controller('admin/analytics')
+@Controller('analytics')
 export class AnalyticsController {
     constructor(private readonly analyticsService: AnalyticsService) {}
 
     @Get('reports-by-category')
+    @UseGuards(IsAdminGuard, JwtAuthGuard)
     @ApiOperation({ summary: 'Obtener el conteo de reportes agrupados por categoría.' })
     @ApiResponse({ status: 200, description: 'Datos de conteo de reportes por categoría.', type: [Object] })
     async getReportCategories(): Promise<ReportsByCategory[]> {
@@ -21,6 +22,7 @@ export class AnalyticsController {
     }
 
     @Get('historical-trends')
+    @UseGuards(IsAdminGuard, JwtAuthGuard)
     @ApiOperation({ summary: 'Obtener datos de reportes por categoría a lo largo del tiempo (Últimos 7 días).' })
     @ApiResponse({ status: 200, description: 'Datos históricos de reportes.', type: [Object] })
     async getHistoricalTrends(): Promise<HistoricalReportData[]> {
@@ -28,6 +30,7 @@ export class AnalyticsController {
     }
 
     @Get('top-sites')
+    @UseGuards(IsAdminGuard, JwtAuthGuard)
     @ApiOperation({ summary: 'Obtener el Top N de sitios web más reportados.' })
     @ApiQuery({ name: 'limit', required: false, type: Number, description: 'Número de resultados a mostrar (defecto: 5)' })
     @ApiResponse({ status: 200, description: 'Lista de sitios más reportados.', type: [Object] })
@@ -37,6 +40,7 @@ export class AnalyticsController {
     }
 
     @Get('status-percentage')
+    @UseGuards(IsAdminGuard)
     @ApiOperation({ summary: 'Obtener el porcentaje de reportes por estado (Aprobado, Rechazado, etc.).' })
     @ApiResponse({ status: 200, description: 'Porcentaje de reportes por estado.', type: [Object] })
     async getReportStatusPercentage(): Promise<StatusPecentage[]> {

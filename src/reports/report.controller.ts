@@ -1,7 +1,7 @@
 /* eslint-disable prettier/prettier */
 
 
-import { Body, Controller, Get, Post, Put, Req, UseGuards, Param, UploadedFile, UseInterceptors, BadRequestException } from '@nestjs/common';
+import { Body, Controller, Get, Post, Put, Req, UseGuards, Param, UploadedFile, UseInterceptors, BadRequestException, Query } from '@nestjs/common';
 import {ReportService} from './report.service'
 import { Report, ReportRepository } from './report.repository';
 import { ApiBearerAuth, ApiOperation, ApiProperty, ApiResponse, ApiTags, ApiConsumes} from '@nestjs/swagger';
@@ -46,32 +46,27 @@ export class UpdateReportStatusDto {
   estado: string;
 }
 
+
 @ApiTags('Reports')
 @Controller('reports')
 export class ReportController {
-    constructor(private readonly reportService: ReportService) {}
-    
-    @Post()
-    @UseGuards(JwtAuthGuard)
-    @ApiBearerAuth()
-    @ApiOperation({ summary: 'Crear un nuevo reporte (para usuarios)' })
-    @ApiResponse({ status: 201, description: 'Reporte creado exitosamente.' })
-    @ApiResponse({ status: 401, description: 'No autorizado.' })
-    async createReport(@Req() req: AuthenticatedRequest, @Body() reportDto: CreateReportDto) : Promise<void> {
-        const userId =Number( req.user.id)
-        await this.reportService.createReport(userId, reportDto);
-    }
+  constructor(private readonly reportService: ReportService) {}
 
-    @Get('my-reports')
-    @UseGuards(JwtAuthGuard)
-    @ApiBearerAuth()
-    @ApiOperation({ summary: 'Obtener reportes del usuario autenticado' })
-    @ApiResponse({ status: 200, description: 'Lista de reportes del usuario.' })
-    @ApiResponse({ status: 401, description: 'No autorizado.' })
-    async (@Req() req: AuthenticatedRequest) : Promise<any> {
-        const userId = Number(req.user.id)
-        return this.reportService.getReportsByUserId(userId);
-    }
+  @Post()
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  async createReport(@Req() req: AuthenticatedRequest, @Body() reportDto: CreateReportDto): Promise<void> {
+    const userId = Number(req.user.id);
+    await this.reportService.createReport(userId, reportDto);
+  }
+
+  @Get('my-reports')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  async getMyReports(@Req() req: AuthenticatedRequest): Promise<any> {
+    const userId = Number(req.user.id);
+    return this.reportService.getReportsByUserId(userId);
+  }
     @Post(':reportId/images')
     @UseGuards(JwtAuthGuard) // Asegura que solo usuarios autenticados puedan subir imágenes
     @UseInterceptors(FileInterceptor('image', multerConfig)) // 'image' es el nombre del campo del formulario
@@ -104,27 +99,47 @@ export class ReportController {
         return { message: 'Imagen subida exitosamente.', imageUrl };
     }
 
+  @Get('admin/all-reports')
+  @UseGuards(IsAdminGuard)
+  @ApiBearerAuth()
+  async getAllReports(): Promise<Report[]> {
+    return this.reportService.getAllReports();
+  }
 
-    @Get('admin/all-reports')
-    @UseGuards(IsAdminGuard)
-    @ApiBearerAuth()
-    @ApiOperation({ summary: 'Obtener todos los reportes (para administradores)' })
-    @ApiResponse({ status: 200, description: 'Lista de todos los reportes.' })
-    @ApiResponse({ status: 401, description: 'No autorizado.' })
-    @ApiResponse({ status: 403, description: 'Prohibido. Solo administradores.' })
-    async getAllReports() : Promise<Report[]> {
-        return this.reportService.getAllReports();
-    }
+  @Put('admin/update-status/:id')
+  @UseGuards(IsAdminGuard)
+  @ApiBearerAuth()
+  async updateReportStatus(
+    @Req() req: AuthenticatedRequest,
+    @Body() updateStatusDto: UpdateReportStatusDto,
+    @Query('id') id: string
+  ): Promise<void> {
+    const adminId = Number(req.user.id);
+    const reportId = Number(id);
+    await this.reportService.updateReportStatus(reportId, updateStatusDto.estado, adminId);
+  }
 
-    @Put('admin/update-status/:id')
-    @UseGuards(IsAdminGuard)
-    @ApiBearerAuth()
-    @ApiOperation({ summary: 'Actualizar el estado de un reporte (para administradores)' })
-    @ApiResponse({ status: 200, description: 'Estado del reporte actualizado.' })
-    @ApiResponse({ status: 401, description: 'No autorizado.' })
-    async updateReportStatus(@Req() req: AuthenticatedRequest, @Param('id') id: string, @Body() updateStatusDto: UpdateReportStatusDto) : Promise<void> {
-        const adminId = Number(req.user.id)
-        const reportId = Number(id);
-        await this.reportService.updateReportStatus(reportId, updateStatusDto.estado, adminId);
-    }
+  //Endpoint  
+  @Get('search')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  async searchReports(@Query('q') query: string): Promise<Report[]> {
+    console.log("SI FUNCIONA")
+    if (!query) return [];
+    const reports = await this.reportService.searchReports(query); 
+    return reports;
+  }
+
+
+}
+
+//Dto detalle
+export class ReportDetailDto {
+  id: number;
+  titulo: string;
+  autorNombre: string;
+  categoriaNombre: string;
+  descripcion: string;
+  url: string;
+  imagenes: string[];
 }

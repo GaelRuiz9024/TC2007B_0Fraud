@@ -14,7 +14,7 @@ export class AnalyticsController {
     constructor(private readonly analyticsService: AnalyticsService) {}
 
     @Get('reports-by-category')
-    @UseGuards(IsAdminGuard, JwtAuthGuard)
+    @UseGuards(JwtAuthGuard)
     @ApiOperation({ summary: 'Obtener el conteo de reportes agrupados por categoría.' })
     @ApiResponse({ status: 200, description: 'Datos de conteo de reportes por categoría.', type: [Object] })
     async getReportCategories(): Promise<ReportsByCategory[]> {
@@ -22,7 +22,7 @@ export class AnalyticsController {
     }
 
     @Get('historical-trends')
-    @UseGuards(IsAdminGuard, JwtAuthGuard)
+    @UseGuards(JwtAuthGuard)
     @ApiOperation({ summary: 'Obtener datos de reportes por categoría a lo largo del tiempo (Últimos 7 días).' })
     @ApiResponse({ status: 200, description: 'Datos históricos de reportes.', type: [Object] })
     async getHistoricalTrends(): Promise<HistoricalReportData[]> {
@@ -30,7 +30,7 @@ export class AnalyticsController {
     }
 
     @Get('top-sites')
-    @UseGuards(IsAdminGuard, JwtAuthGuard)
+    @UseGuards(JwtAuthGuard)
     @ApiOperation({ summary: 'Obtener el Top N de sitios web más reportados.' })
     @ApiQuery({ name: 'limit', required: false, type: Number, description: 'Número de resultados a mostrar (defecto: 5)' })
     @ApiResponse({ status: 200, description: 'Lista de sitios más reportados.', type: [Object] })

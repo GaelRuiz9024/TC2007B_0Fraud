@@ -49,4 +49,16 @@ export class CategoryRepository{
         const result= rows as Category[];
         return result[0];
     }
+
+    
+}
+export class UsersCategoryRepository{
+    constructor(private readonly dbService: DbService){}
+
+        async findCategories(): Promise<Category[]> {
+  const sql = `SELECT * FROM categoria WHERE activa = 1`;
+  const [rows] = await this.dbService.getPool().query(sql);
+  return rows as Category[];
+    }
+
 }

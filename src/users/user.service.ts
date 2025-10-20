@@ -59,7 +59,7 @@ export class UserService {
         }
         
         if (updateData.contrasena !== undefined) {
-            dataToUpdate.contrasena_hash = sha256(updateData.contrasena);
+            dataToUpdate.contrasenaHash = sha256(updateData.contrasena);
         }
 
         // Si no hay datos para actualizar, retornar los datos actuales

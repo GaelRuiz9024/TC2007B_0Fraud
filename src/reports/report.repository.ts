@@ -89,7 +89,7 @@ export class ReportRepository {
     }
     async searchReportsByKeyword(keyword: string): Promise<Report[]> {
         const sql = `
-            SELECT 
+            SELECT
                 r.id,
                 r.titulo,
                 r.descripcion,
@@ -114,6 +114,7 @@ export class ReportRepository {
 
                 const likeKeyword = `%${keyword}%`;
                 const [rows] = await this.dbService.getPool().query(sql, [likeKeyword, likeKeyword, likeKeyword, likeKeyword]);
-                return rows as Report[];
+                const reports = rows as any[];
+                return this.enrichReportsList(reports);
         }
 }

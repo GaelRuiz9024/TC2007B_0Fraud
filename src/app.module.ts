@@ -1,4 +1,3 @@
-/* eslint-disable prettier/prettier */
 
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
@@ -12,8 +11,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { AdminModule } from './admin/admin.module';
 import { ReportModule } from './reports/report.module';
 import { CategoryModule } from './category/category.module';
-import { AnalyticsModule } from './analytics/analytics.module'; // 👈 **NUEVA IMPORTACIÓN**
-
+import { AnalyticsModule } from './analytics/analytics.module'; 
 
 @Module({
   imports: [JwtModule.register({

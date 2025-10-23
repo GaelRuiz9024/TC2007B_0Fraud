@@ -1,4 +1,3 @@
-/* eslint-disable prettier/prettier */
 import { createHash } from 'crypto';
 
 export function sha256(input: string): string {

@@ -1,7 +1,6 @@
 import { Body, Controller, Post, Put, Req, Delete, UseGuards, Param, Get } from "@nestjs/common";
 import { AdminDto, AdminService } from "./admin.service";
 import { ApiProperty, ApiResponse, ApiTags, ApiBearerAuth, ApiOperation } from "@nestjs/swagger";
-import { JwtAuthGuard } from "src/common/guards/jwt-auth.guard";
 import { IsAdminGuard } from "src/common/guards/is-admin.guard";
 import { IsIn, IsInt, IsNotEmpty } from "class-validator";
 
@@ -47,6 +46,7 @@ export class adminController{
         return {
             correo: admin.correo,
             nombre: admin.nombre,
+            apellidos: admin.apellidos,
         };
     }
 

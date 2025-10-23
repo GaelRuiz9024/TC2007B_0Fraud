@@ -20,6 +20,7 @@ import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
 import type { AuthenticatedRequest } from 'src/common/interfaces/authenticated-request';
 import { TokenService } from './tokens.service';
 import { UserService } from 'src/users/user.service';
+import { IsEmail, IsNotEmpty } from 'class-validator';
 
 // =====================
 // DTOs para documentación Swagger
@@ -30,12 +31,16 @@ export class LoginDto {
       example: 'usuario@ejemplo.com',
       description: 'Correo electrónico del usuario registrado.',
    })
+   @IsNotEmpty() 
+   @IsEmail()
    correo: string;
 
    @ApiProperty({
       example: '123456',
       description: 'Contraseña asociada al correo.',
    })
+ 
+   @IsNotEmpty()   
    contrasena: string;
 }
 

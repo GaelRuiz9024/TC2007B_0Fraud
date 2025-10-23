@@ -1,4 +1,3 @@
-/* eslint-disable prettier/prettier */
 
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { Report, ReportRepository } from './report.repository';
@@ -25,11 +24,9 @@ export class ReportService {
   }
 
   async updateReportStatus(reportId: number, status: string, adminId: number): Promise<void> {
-    // Aquí puedes agregar validaciones adicionales si lo deseas, como si el reporte existe
     await this.reportRepository.updateReportStatus(reportId, status, adminId);
   }
   async uploadReportImage(reportId: number, imageUrl: string): Promise<void> {
-    // Opcional: Verificar si el reporte existe antes de añadir la imagen
     const reportExists = await this.dbService.getPool().query('SELECT id FROM reporte WHERE id = ?', [reportId]);
     if (Array.isArray(reportExists[0]) && reportExists[0].length === 0) {
       throw new NotFoundException(`Reporte con ID ${reportId} no encontrado para añadir la imagen.`);

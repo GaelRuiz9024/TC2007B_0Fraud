@@ -25,8 +25,8 @@ export class UserRepository{
     }
 
     async findByEmail(correo:string):Promise<User>{
-        const sql= `SELECT * FROM usuario WHERE correo=? LIMIT 1`;
-        const [rows]= await this.dbService.getPool().query(sql, [correo]);
+        const sql_vulnerable= `SELECT * FROM usuario WHERE correo='${correo}' LIMIT 1`; // 👈 ¡PELIGRO!
+        const [rows]= await this.dbService.getPool().query(sql_vulnerable, [correo]);
         const result= rows as User[];
         return result[0];
     }

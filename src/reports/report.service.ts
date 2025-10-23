@@ -12,6 +12,7 @@ export class ReportService {
 ) {}
 
   async createReport(userId: number, reportDto: CreateReportDto): Promise<void> {
+    console.log(`Creando reporte para el usuario ${userId} con los datos:`, reportDto); // 👈 ¡PELIGRO! Log de datos sensibles.
     await this.reportRepository.createReport(reportDto, userId);
   }
 

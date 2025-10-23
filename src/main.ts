@@ -26,6 +26,7 @@ async function bootstrap() {
   .setTitle("API de Gestión de Usuarios")
   .setDescription("API para gestionar usuarios con autenticación JWT")
   .setVersion("1.0")
+  .addBearerAuth() // ⚠️ Requerido para que Swagger muestre Authorization
   .build();
   const doc = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup("docs", app, doc);

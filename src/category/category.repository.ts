@@ -23,22 +23,29 @@ export class CategoryRepository{
         return rows as Category[];
     }
     async updateCategory(id: number, updateData: Partial<Category>): Promise<Category | undefined> {
-        const fields = Object.keys(updateData);
-        const values = Object.values(updateData);
+        const fieldsToUpdate = Object.keys(updateData).filter(key => 
+            key !== 'id' && updateData[key as keyof Category] !== undefined
+        );
 
-        if (fields.length === 0) {
-            throw new Error("No hay datos para actualizar");
+        if (fieldsToUpdate.length === 0) {
+            console.warn(`No valid fields provided to update category ${id}. Returning current data.`);
+            return this.findById(id); 
         }
 
-        const setClause = fields.filter(field => field !== 'id').map(field => `${field}=?`).join(', ');
-        const updateValues= values.slice(0,fields.length - (fields.includes('id')?1:0));
-        
-        const sql = `UPDATE categoria SET ${setClause} WHERE id=?`;
+        const setClause = fieldsToUpdate.map(field => `\`${field}\`=?`).join(', '); // Usar backticks por si los nombres de campo son palabras reservadas
 
-        await this.dbService.getPool().query(sql, [...updateValues, id]);
+        const valuesToUpdate = fieldsToUpdate.map(field => updateData[field as keyof Category]);
+
+        const sql = `UPDATE categoria SET ${setClause} WHERE id=?`;
+        
+        try {
+            await this.dbService.getPool().query(sql, [...valuesToUpdate, id]);
+        } catch (error) {
+            console.error(`Error updating category ${id}:`, error);
+            throw error; 
+        }
         return this.findById(id);
     }
-
     async deleteCategory(id: number): Promise<void> {
         const sql = `UPDATE categoria SET activa=0 WHERE id=?`; 
         await this.dbService.getPool().query(sql, [id]);
@@ -54,11 +61,10 @@ export class CategoryRepository{
 }
 export class UsersCategoryRepository{
     constructor(private readonly dbService: DbService){}
-
-        async findCategories(): Promise<Category[]> {
-  const sql = `SELECT * FROM categoria WHERE activa = 1`;
-  const [rows] = await this.dbService.getPool().query(sql);
-  return rows as Category[];
+    async findCategories(): Promise<Category[]> {
+        const sql = `SELECT * FROM categoria WHERE activa = 1`;
+        const [rows] = await this.dbService.getPool().query(sql);
+        return rows as Category[];
     }
 
 }

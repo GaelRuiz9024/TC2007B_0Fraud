@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { AnalyticsRepository, ReportsByCategory, ReportStatusCount, TopReportedSites, HistoricalReportData } from "./analytics.repository"; // 👈 Importar HistoricalReportData
+import { AnalyticsRepository, ReportsByCategory, ReportStatusCount, TopReportedSites, HistoricalReportData, ReportsByMonth } from "./analytics.repository"; // 👈 Importar HistoricalReportData
 
 export type StatusPecentage= {
     status: string;
@@ -36,5 +36,9 @@ export class AnalyticsService{
             count: item.count,
             percentage: parseFloat(((item.count / totalReports) * 100).toFixed(2)),
         }));
+    }
+    
+    async getReportsByMonth(): Promise<ReportsByMonth[]> {
+        return this.analyticsRepository.getReportsByMonth();
     }
 }

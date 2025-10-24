@@ -36,6 +36,9 @@ let AnalyticsController = class AnalyticsController {
     async getReportStatusPercentage() {
         return this.analyticsService.getReportStatusPercentages();
     }
+    async getReportsByMonth() {
+        return this.analyticsService.getReportsByMonth();
+    }
 };
 exports.AnalyticsController = AnalyticsController;
 __decorate([
@@ -76,6 +79,15 @@ __decorate([
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
 ], AnalyticsController.prototype, "getReportStatusPercentage", null);
+__decorate([
+    (0, common_1.Get)('reports-by-month'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, swagger_1.ApiOperation)({ summary: 'Obtener la cantidad de reportes por mes.' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Cantidad de reportes por mes.', type: [Object] }),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], AnalyticsController.prototype, "getReportsByMonth", null);
 exports.AnalyticsController = AnalyticsController = __decorate([
     (0, swagger_1.ApiTags)('Admin - Analíticas y Estadísticas'),
     (0, swagger_1.ApiBearerAuth)(),

@@ -1,4 +1,4 @@
-import { AnalyticsRepository, ReportsByCategory, TopReportedSites, HistoricalReportData } from "./analytics.repository";
+import { AnalyticsRepository, ReportsByCategory, TopReportedSites, HistoricalReportData, ReportsByMonth } from "./analytics.repository";
 export type StatusPecentage = {
     status: string;
     percentage: number;
@@ -11,4 +11,5 @@ export declare class AnalyticsService {
     getHistoricalReportTrends(): Promise<HistoricalReportData[]>;
     getTopReportedSites(limit?: number): Promise<TopReportedSites[]>;
     getReportStatusPercentages(): Promise<StatusPecentage[]>;
+    getReportsByMonth(): Promise<ReportsByMonth[]>;
 }

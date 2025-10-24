@@ -16,6 +16,10 @@ export type HistoricalReportData = {
     categoryName: string;
     reportCount: number;
 };
+export type ReportsByMonth = {
+    month: string;
+    reportCount: number;
+};
 export declare class AnalyticsRepository {
     private readonly dbService;
     constructor(dbService: DbService);
@@ -23,4 +27,5 @@ export declare class AnalyticsRepository {
     getReportsByCategory(): Promise<ReportsByCategory[]>;
     getTopReportedSites(limit?: number): Promise<TopReportedSites[]>;
     getReportStatusCounts(): Promise<ReportStatusCount[]>;
+    getReportsByMonth(): Promise<ReportsByMonth[]>;
 }

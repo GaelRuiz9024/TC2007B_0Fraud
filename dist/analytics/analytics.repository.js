@@ -86,6 +86,21 @@ let AnalyticsRepository = class AnalyticsRepository {
         const [rows] = await this.dbService.getPool().query(sql);
         return rows;
     }
+    async getReportsByMonth() {
+        const sql = `
+            SELECT 
+                DATE_FORMAT(fechaCreacion, '%Y-%m') AS month,
+                COUNT(id) AS reportCount
+            FROM 
+                reporte
+            GROUP BY 
+                month
+            ORDER BY 
+                month ASC;
+        `;
+        const [rows] = await this.dbService.getPool().query(sql);
+        return rows;
+    }
 };
 exports.AnalyticsRepository = AnalyticsRepository;
 exports.AnalyticsRepository = AnalyticsRepository = __decorate([

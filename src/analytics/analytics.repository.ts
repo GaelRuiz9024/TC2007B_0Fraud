@@ -20,6 +20,12 @@ export type HistoricalReportData = {
     categoryName: string;
     reportCount: number;
 }
+
+export type ReportsByMonth = {
+    month: string;  
+    reportCount: number;
+}
+
 @Injectable()
 export class AnalyticsRepository{
     constructor(private readonly dbService: DbService){}
@@ -94,5 +100,21 @@ export class AnalyticsRepository{
         `;
         const [rows] = await this.dbService.getPool().query(sql);
         return rows as ReportStatusCount[];
+    }
+
+    async getReportsByMonth(): Promise<ReportsByMonth[]> {
+        const sql = `
+            SELECT 
+                DATE_FORMAT(fechaCreacion, '%Y-%m') AS month,
+                COUNT(id) AS reportCount
+            FROM 
+                reporte
+            GROUP BY 
+                month
+            ORDER BY 
+                month ASC;
+        `;
+        const [rows] = await this.dbService.getPool().query(sql);
+        return rows as ReportsByMonth[];
     }
 }

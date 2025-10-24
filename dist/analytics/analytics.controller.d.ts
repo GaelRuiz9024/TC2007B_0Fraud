@@ -1,5 +1,5 @@
 import { AnalyticsService, StatusPecentage } from './analytics.service';
-import { ReportsByCategory, TopReportedSites, HistoricalReportData } from './analytics.repository';
+import { ReportsByCategory, TopReportedSites, HistoricalReportData, ReportsByMonth } from './analytics.repository';
 export declare class AnalyticsController {
     private readonly analyticsService;
     constructor(analyticsService: AnalyticsService);
@@ -7,4 +7,5 @@ export declare class AnalyticsController {
     getHistoricalTrends(): Promise<HistoricalReportData[]>;
     getTopSites(limit?: string): Promise<TopReportedSites[]>;
     getReportStatusPercentage(): Promise<StatusPecentage[]>;
+    getReportsByMonth(): Promise<ReportsByMonth[]>;
 }

@@ -38,6 +38,9 @@ let AnalyticsService = class AnalyticsService {
             percentage: parseFloat(((item.count / totalReports) * 100).toFixed(2)),
         }));
     }
+    async getReportsByMonth() {
+        return this.analyticsRepository.getReportsByMonth();
+    }
 };
 exports.AnalyticsService = AnalyticsService;
 exports.AnalyticsService = AnalyticsService = __decorate([

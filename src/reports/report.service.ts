@@ -1,7 +1,7 @@
 
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { Report, ReportRepository } from './report.repository';
-import { CreateReportDto,ReportDetailDto } from './report.controller';
+import { Report, ReportDetail, ReportRepository } from './report.repository';
+import { CreateReportDto,ReportDetailDto} from './report.controller';
 import { DbService } from 'src/db/db.service';
 
 

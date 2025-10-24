@@ -4,7 +4,7 @@ import { ApiBearerAuth, ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@ne
 import { IsAdminGuard } from 'src/common/guards/is-admin.guard';
 import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
 import { AnalyticsService, StatusPecentage } from './analytics.service';
-import { ReportsByCategory, TopReportedSites, HistoricalReportData } from './analytics.repository'; 
+import { ReportsByCategory, TopReportedSites, HistoricalReportData, ReportsByMonth } from './analytics.repository'; 
 
 @ApiTags('Admin - Analíticas y Estadísticas')
 @ApiBearerAuth()
@@ -45,4 +45,13 @@ export class AnalyticsController {
     async getReportStatusPercentage(): Promise<StatusPecentage[]> {
         return this.analyticsService.getReportStatusPercentages();
     }
+
+    @Get('reports-by-month')
+    @UseGuards(JwtAuthGuard)
+    @ApiOperation({ summary: 'Obtener la cantidad de reportes por mes.' })
+    @ApiResponse({ status: 200, description: 'Cantidad de reportes por mes.', type: [Object] })
+    async getReportsByMonth(): Promise<ReportsByMonth[]> {
+        return this.analyticsService.getReportsByMonth();
+    }
+
 }

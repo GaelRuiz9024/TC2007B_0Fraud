@@ -1,6 +1,7 @@
 import {Injectable, NotFoundException} from "@nestjs/common";
 import {CategoryRepository, Category} from "./category.repository";
 
+
 export type CreateCategoryDto= {
     nombre: string;
     descripcion?: string;
@@ -35,6 +36,11 @@ export class CategoryService{
             throw new NotFoundException(`Categoría con ID ${id} no encontrada`);
         }
         await this.categoryRepo.deleteCategory(id);
+    }
+
+    async findCategories(): Promise<Category[]> {
+    const all = await this.categoryRepo.findAllCategories();
+    return all.filter(c => c.activa === 1);
     }
 
 

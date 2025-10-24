@@ -33,6 +33,17 @@ type ReportImage = {
     urlImagen: string;
 }
 
+export type ReportDetail = {
+  id: number;
+  titulo: string;
+  autorNombre: string;
+  autorApellido: string;
+  categoriaNombre: string;
+  descripcion: string;
+  url: string;
+  imagenes: string[];
+};
+
 @Injectable()
 export class ReportRepository {
     constructor(private readonly dbService: DbService) {}

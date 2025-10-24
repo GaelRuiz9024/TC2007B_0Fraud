@@ -1,6 +1,6 @@
 
 import { Module } from '@nestjs/common';
-import { CategoryController } from './category.controller';
+import { CategoryController, UsersCategoryController } from './category.controller';
 import { CategoryService } from './category.service';
 import { CategoryRepository } from './category.repository';
 import { AuthModule } from 'src/auth/auth.module'; // Necesario para IsAdminGuard

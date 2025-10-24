@@ -103,19 +103,18 @@ export class AnalyticsRepository{
     }
 
     async getReportsByMonth(): Promise<ReportsByMonth[]> {
-    const sql = `
-        SELECT 
-            DATE_FORMAT(fechaCreacion, '%Y-%m') AS month,
-            COUNT(id) AS reportCount
-        FROM 
-            reporte
-        GROUP BY 
-            month
-        ORDER BY 
-            month ASC;
-    `;
-    const [rows] = await this.dbService.getPool().query(sql);
-    return rows as ReportsByMonth[];
-}
-
+        const sql = `
+            SELECT 
+                DATE_FORMAT(fechaCreacion, '%Y-%m') AS month,
+                COUNT(id) AS reportCount
+            FROM 
+                reporte
+            GROUP BY 
+                month
+            ORDER BY 
+                month ASC;
+        `;
+        const [rows] = await this.dbService.getPool().query(sql);
+        return rows as ReportsByMonth[];
+    }
 }

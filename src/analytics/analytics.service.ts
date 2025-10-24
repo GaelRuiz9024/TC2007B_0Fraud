@@ -37,9 +37,8 @@ export class AnalyticsService{
             percentage: parseFloat(((item.count / totalReports) * 100).toFixed(2)),
         }));
     }
-
+    
     async getReportsByMonth(): Promise<ReportsByMonth[]> {
-    return this.analyticsRepository.getReportsByMonth();
-}
-
+        return this.analyticsRepository.getReportsByMonth();
+    }
 }

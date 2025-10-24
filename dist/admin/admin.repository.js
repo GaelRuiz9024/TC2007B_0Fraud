@@ -58,4 +58,3 @@ exports.AdminRepository = AdminRepository = __decorate([
     __metadata("design:paramtypes", [db_service_1.DbService,
         user_repository_1.UserRepository])
 ], AdminRepository);
-//# sourceMappingURL=admin.repository.js.map

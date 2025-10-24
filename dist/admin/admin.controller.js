@@ -183,4 +183,3 @@ exports.adminController = adminController = __decorate([
     (0, common_1.Controller)("admin"),
     __metadata("design:paramtypes", [admin_service_1.AdminService])
 ], adminController);
-//# sourceMappingURL=admin.controller.js.map

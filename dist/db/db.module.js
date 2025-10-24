@@ -19,4 +19,3 @@ exports.DbModule = DbModule = __decorate([
         exports: [db_service_1.DbService],
     })
 ], DbModule);
-//# sourceMappingURL=db.module.js.map

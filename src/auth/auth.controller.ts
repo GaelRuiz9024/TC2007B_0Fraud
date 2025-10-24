@@ -1,4 +1,3 @@
-/* eslint-disable prettier/prettier */
 
 import { UserService } from "src/users/user.service";
 import { TokenService } from "./tokens.service";
@@ -6,7 +5,17 @@ import { Body, Controller, Get, Post, Req, UseGuards } from "@nestjs/common";
 import { JwtAuthGuard } from "src/common/guards/jwt-auth.guard";
 import type { AuthenticatedRequest } from "src/common/interfaces/authenticated-request";
 import { ApiBearerAuth } from "@nestjs/swagger";
+import { IsEmail, IsNotEmpty, IsString } from 'class-validator';
 
+export class LoginDto {
+  @IsEmail({}, { message: 'El correo debe ser una dirección de correo válida.' })
+  @IsNotEmpty({ message: 'El correo es obligatorio.' })
+  correo: string;
+
+  @IsString({ message: 'La contraseña debe ser una cadena de texto.' })
+  @IsNotEmpty({ message: 'La contraseña es obligatoria.' })
+  contrasena: string;
+}
 @Controller("auth")
 export class AuthController{
     constructor(private readonly tokenService: TokenService,
@@ -14,7 +23,7 @@ export class AuthController{
     ){}
     
     @Post("login")
-    async login(@Body() dto:{correo:string, contrasena:string}){
+    async login(@Body() dto:LoginDto){
         const usuario= await this.userService.login(dto.correo, dto.contrasena);
         if(!usuario)
             throw Error("Usuario no encontrado");

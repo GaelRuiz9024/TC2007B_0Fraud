@@ -37,4 +37,3 @@ exports.TipsController = TipsController = __decorate([
     (0, common_1.Controller)('tips'),
     __metadata("design:paramtypes", [tips_service_1.TipsService])
 ], TipsController);
-//# sourceMappingURL=tips.controller.js.map

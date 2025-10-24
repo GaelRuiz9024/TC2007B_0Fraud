@@ -26,4 +26,3 @@ exports.AuthModule = AuthModule = __decorate([
         exports: [tokens_service_1.TokenService]
     })
 ], AuthModule);
-//# sourceMappingURL=auth.module.js.map

@@ -63,4 +63,3 @@ exports.ReportService = ReportService = __decorate([
     __metadata("design:paramtypes", [report_repository_1.ReportRepository,
         db_service_1.DbService])
 ], ReportService);
-//# sourceMappingURL=report.service.js.map

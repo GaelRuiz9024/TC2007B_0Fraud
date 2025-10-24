@@ -43,4 +43,3 @@ __decorate([
 exports.FileController = FileController = __decorate([
     (0, common_1.Controller)("files")
 ], FileController);
-//# sourceMappingURL=files.controller.js.map

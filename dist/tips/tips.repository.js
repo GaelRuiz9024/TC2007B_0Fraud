@@ -32,4 +32,3 @@ exports.TipsRepository = TipsRepository = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [db_service_1.DbService])
 ], TipsRepository);
-//# sourceMappingURL=tips.repository.js.map

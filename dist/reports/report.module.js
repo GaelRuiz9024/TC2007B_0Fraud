@@ -23,4 +23,3 @@ exports.ReportModule = ReportModule = __decorate([
         providers: [report_service_1.ReportService, report_repository_1.ReportRepository],
     })
 ], ReportModule);
-//# sourceMappingURL=report.module.js.map

@@ -95,4 +95,3 @@ exports.ReportRepository = ReportRepository = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [db_service_1.DbService])
 ], ReportRepository);
-//# sourceMappingURL=report.repository.js.map

@@ -21,4 +21,3 @@ exports.TipsModule = TipsModule = __decorate([
         exports: [tips_service_1.TipsService]
     })
 ], TipsModule);
-//# sourceMappingURL=tips.module.js.map

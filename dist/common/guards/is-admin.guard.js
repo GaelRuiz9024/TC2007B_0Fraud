@@ -31,4 +31,3 @@ exports.IsAdminGuard = IsAdminGuard = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [tokens_service_1.TokenService])
 ], IsAdminGuard);
-//# sourceMappingURL=is-admin.guard.js.map

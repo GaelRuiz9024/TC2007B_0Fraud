@@ -12,12 +12,28 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.AuthController = void 0;
+exports.AuthController = exports.LoginDto = void 0;
 const user_service_1 = require("../users/user.service");
 const tokens_service_1 = require("./tokens.service");
 const common_1 = require("@nestjs/common");
 const jwt_auth_guard_1 = require("../common/guards/jwt-auth.guard");
 const swagger_1 = require("@nestjs/swagger");
+const class_validator_1 = require("class-validator");
+class LoginDto {
+    correo;
+    contrasena;
+}
+exports.LoginDto = LoginDto;
+__decorate([
+    (0, class_validator_1.IsEmail)({}, { message: 'El correo debe ser una dirección de correo válida.' }),
+    (0, class_validator_1.IsNotEmpty)({ message: 'El correo es obligatorio.' }),
+    __metadata("design:type", String)
+], LoginDto.prototype, "correo", void 0);
+__decorate([
+    (0, class_validator_1.IsString)({ message: 'La contraseña debe ser una cadena de texto.' }),
+    (0, class_validator_1.IsNotEmpty)({ message: 'La contraseña es obligatoria.' }),
+    __metadata("design:type", String)
+], LoginDto.prototype, "contrasena", void 0);
 let AuthController = class AuthController {
     tokenService;
     userService;
@@ -56,7 +72,7 @@ __decorate([
     (0, common_1.Post)("login"),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
+    __metadata("design:paramtypes", [LoginDto]),
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "login", null);
 __decorate([
@@ -80,4 +96,3 @@ exports.AuthController = AuthController = __decorate([
     __metadata("design:paramtypes", [tokens_service_1.TokenService,
         user_service_1.UserService])
 ], AuthController);
-//# sourceMappingURL=auth.controller.js.map

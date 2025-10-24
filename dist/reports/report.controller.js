@@ -188,4 +188,3 @@ class ReportDetailDto {
     imagenes;
 }
 exports.ReportDetailDto = ReportDetailDto;
-//# sourceMappingURL=report.controller.js.map

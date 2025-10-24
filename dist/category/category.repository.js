@@ -12,6 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.UsersCategoryRepository = exports.CategoryRepository = void 0;
 const common_1 = require("@nestjs/common");
 const db_service_1 = require("../db/db.service");
+const ALLOWED_FIELDS_CATEGORY = ['nombre', 'descripcion', 'activa'];
 let CategoryRepository = class CategoryRepository {
     dbService;
     constructor(dbService) {
@@ -28,21 +29,19 @@ let CategoryRepository = class CategoryRepository {
         return rows;
     }
     async updateCategory(id, updateData) {
-        const fieldsToUpdate = Object.keys(updateData).filter(key => key !== 'id' && updateData[key] !== undefined);
-        if (fieldsToUpdate.length === 0) {
-            console.warn(`No valid fields provided to update category ${id}. Returning current data.`);
-            return this.findById(id);
+        const fields = Object.keys(updateData);
+        const values = Object.values(updateData);
+        if (fields.length === 0) {
+            throw new Error("No hay datos para actualizar");
         }
-        const setClause = fieldsToUpdate.map(field => `\`${field}\`=?`).join(', ');
-        const valuesToUpdate = fieldsToUpdate.map(field => updateData[field]);
+        const validFields = fields.filter(field => ALLOWED_FIELDS_CATEGORY.includes(field));
+        if (validFields.length === 0) {
+            throw new Error("No hay datos válidos para actualizar");
+        }
+        const setClause = validFields.map(field => `${field}=?`).join(', ');
+        const updateValues = validFields.map(field => updateData[field]);
         const sql = `UPDATE categoria SET ${setClause} WHERE id=?`;
-        try {
-            await this.dbService.getPool().query(sql, [...valuesToUpdate, id]);
-        }
-        catch (error) {
-            console.error(`Error updating category ${id}:`, error);
-            throw error;
-        }
+        await this.dbService.getPool().query(sql, [...updateValues, id]);
         return this.findById(id);
     }
     async deleteCategory(id) {
@@ -73,4 +72,3 @@ class UsersCategoryRepository {
     }
 }
 exports.UsersCategoryRepository = UsersCategoryRepository;
-//# sourceMappingURL=category.repository.js.map

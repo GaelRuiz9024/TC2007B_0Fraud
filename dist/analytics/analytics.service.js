@@ -47,4 +47,3 @@ exports.AnalyticsService = AnalyticsService = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [analytics_repository_1.AnalyticsRepository])
 ], AnalyticsService);
-//# sourceMappingURL=analytics.service.js.map

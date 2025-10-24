@@ -7,7 +7,7 @@ export type Category = {
     descripcion: string | null;
     activa: 0| 1;
 }
-
+const ALLOWED_FIELDS_CATEGORY = ['nombre', 'descripcion', 'activa'];
 @Injectable()
 export class CategoryRepository{
     constructor(private readonly dbService: DbService){}
@@ -22,31 +22,38 @@ export class CategoryRepository{
         const [rows] = await this.dbService.getPool().query(sql);
         return rows as Category[];
     }
+    
     async updateCategory(id: number, updateData: Partial<Category>): Promise<Category | undefined> {
-        const fieldsToUpdate = Object.keys(updateData).filter(key => 
-            key !== 'id' && updateData[key as keyof Category] !== undefined
+        const fields = Object.keys(updateData);
+        const values = Object.values(updateData);
+
+        if (fields.length === 0) {
+            throw new Error("No hay datos para actualizar");
+        }
+
+        // 🚨 CAMBIO CLAVE: Filtrar solo los campos permitidos y generar la cláusula SET
+        const validFields = fields.filter(field => 
+            ALLOWED_FIELDS_CATEGORY.includes(field)
         );
 
-        if (fieldsToUpdate.length === 0) {
-            console.warn(`No valid fields provided to update category ${id}. Returning current data.`);
-            return this.findById(id); 
+        if (validFields.length === 0) {
+            // Si solo se envían campos no permitidos, lanzar un error o retornar.
+            throw new Error("No hay datos válidos para actualizar");
         }
 
-        const setClause = fieldsToUpdate.map(field => `\`${field}\`=?`).join(', '); // Usar backticks por si los nombres de campo son palabras reservadas
-
-        const valuesToUpdate = fieldsToUpdate.map(field => updateData[field as keyof Category]);
-
-        const sql = `UPDATE categoria SET ${setClause} WHERE id=?`;
+        // Crear la cláusula SET solo con los campos validados
+        const setClause = validFields.map(field => `${field}=?`).join(', ');
         
-        try {
-            await this.dbService.getPool().query(sql, [...valuesToUpdate, id]);
-        } catch (error) {
-            console.error(`Error updating category ${id}:`, error);
-            throw error; 
-        }
+        // Crear la lista de valores en el orden de `validFields`
+        const updateValues = validFields.map(field => updateData[field]);
+        
+        const sql = `UPDATE categoria SET ${setClause} WHERE id=?`;
+
+        // El uso de `?` y pasar los valores en un array es la clave para la seguridad contra inyección SQL.
+        await this.dbService.getPool().query(sql, [...updateValues, id]);
+        
         return this.findById(id);
-    }
-    async deleteCategory(id: number): Promise<void> {
+    }    async deleteCategory(id: number): Promise<void> {
         const sql = `UPDATE categoria SET activa=0 WHERE id=?`; 
         await this.dbService.getPool().query(sql, [id]);
     }

@@ -17,4 +17,3 @@ exports.FilesModule = FilesModule = __decorate([
         controllers: [files_controller_1.FileController],
     })
 ], FilesModule);
-//# sourceMappingURL=files.module.js.map

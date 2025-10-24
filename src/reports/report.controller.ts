@@ -1,6 +1,6 @@
 
 
-import { Body, Controller, Get, Post, Put, Req, UseGuards, Param, UploadedFile, UseInterceptors, BadRequestException } from '@nestjs/common';
+import { Body, Controller, Get, Post, Put, Req, UseGuards, Param, UploadedFile, UseInterceptors, BadRequestException, Query } from '@nestjs/common';
 import {ReportService} from './report.service'
 import { Report } from './report.repository';
 import { ApiBearerAuth, ApiOperation, ApiProperty, ApiResponse, ApiTags, ApiConsumes} from '@nestjs/swagger';
@@ -124,4 +124,28 @@ export class ReportController {
         const reportId = Number(id);
         await this.reportService.updateReportStatus(reportId, updateStatusDto.estado, adminId);
     }
+
+    @Get('search')
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    async searchReports(@Query('q') query: string): Promise<Report[]> {
+      console.log("SI FUNCIONA")
+      if (!query) return [];
+      const reports = await this.reportService.searchReports(query); 
+      return reports;
+    }
+
+
+
+}
+
+export class ReportDetailDto {
+    id: number;
+    titulo: string;
+    autorNombre: string;
+    autorApellido: string;
+    categoriaNombre: string;
+    descripcion: string;
+    url: string;
+    imagenes: string[];
 }

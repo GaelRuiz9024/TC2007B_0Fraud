@@ -7,7 +7,7 @@ import { AuthModule } from 'src/auth/auth.module'; // Necesario para IsAdminGuar
 
 @Module({
   imports: [AuthModule],
-  controllers: [CategoryController],
+  controllers: [CategoryController,UsersCategoryController],
   providers: [CategoryService, CategoryRepository],
   exports: [CategoryService, CategoryRepository]
 })

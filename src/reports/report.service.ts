@@ -1,7 +1,7 @@
 
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { Report, ReportRepository } from './report.repository';
-import { CreateReportDto } from './report.controller';
+import { CreateReportDto,ReportDetailDto } from './report.controller';
 import { DbService } from 'src/db/db.service';
 
 
@@ -34,4 +34,24 @@ export class ReportService {
     }
     await this.reportRepository.addImageToReport(reportId, imageUrl);
   }
+  async mapReportToDto(report: ReportDetailDto): Promise<ReportDetailDto> {
+    const autorCompleto = report.autorNombre
+      ? `${report.autorNombre} ${report.autorApellido ?? ''}`.trim()
+      : 'Anónimo';
+    
+    return {
+      id: report.id,
+      titulo: report.titulo,
+      autorNombre: autorCompleto,
+      autorApellido: report.autorApellido,
+      categoriaNombre: report.categoriaNombre ?? 'Sin categoría',
+      descripcion: report.descripcion,
+      url: report.url,
+      imagenes: report.imagenes || [],
+    };
+  }
+
+  async searchReports(keyword: string): Promise<Report[]> {
+        return this.reportRepository.searchReportsByKeyword(keyword);
+    }
 }

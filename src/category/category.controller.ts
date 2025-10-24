@@ -3,6 +3,7 @@ import { Body, Controller, Delete, Get, Param, Post, Put, UseGuards } from '@nes
 import { ApiBearerAuth, ApiOperation, ApiProperty, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { IsIn, IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
 import { IsAdminGuard } from 'src/common/guards/is-admin.guard';
+import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard'
 import { Category } from './category.repository';
 import { CategoryService } from './category.service';
 
@@ -81,4 +82,20 @@ export class CategoryController {
         const categoryId = Number(id);
         await this.categoryService.deleteCategory(categoryId);
     }
+}
+@ApiTags('Categorías')
+@Controller('categories')
+
+export class UsersCategoryController {
+  constructor(private readonly categoryService: CategoryService) {}
+
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @Get()
+  @ApiOperation({ summary: 'Obtener todas las categorías' })
+  @ApiResponse({ status: 200, description: 'Lista de categorías' })
+  async findCategories(): Promise<Category[]> {
+    const all = await this.categoryService.findAllCategories();
+    return all.filter(c => c.activa === 1);
+  }
 }

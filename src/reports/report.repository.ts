@@ -18,16 +18,6 @@ export type Report = {
 
 }
 
-export type ReportDetail = {
-  id: number;
-  titulo: string;
-  autorNombre: string;
-  autorApellido: string;
-  categoriaNombre: string;
-  descripcion: string;
-  url: string;
-  imagenes: string[];
-};
 
 type ReportImage = {
     urlImagen: string;

@@ -103,29 +103,8 @@ export class ReportController {
     return this.reportService.getAllReports();
   }
 
-  @Put('admin/update-status/:id')
-  @UseGuards(IsAdminGuard)
-  @ApiBearerAuth()
-  async updateReportStatus(
-    @Req() req: AuthenticatedRequest,
-    @Body() updateStatusDto: UpdateReportStatusDto,
-    @Query('id') id: string
-  ): Promise<void> {
-    const adminId = Number(req.user.id);
-    const reportId = Number(id);
-    await this.reportService.updateReportStatus(reportId, updateStatusDto.estado, adminId);
-  }
-
-  //Endpoint  
-  @Get('search')
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
-  async searchReports(@Query('q') query: string): Promise<Report[]> {
-    console.log("SI FUNCIONA")
-    if (!query) return [];
-    const reports = await this.reportService.searchReports(query); 
-    return reports;
-  }
+ 
+ 
 
 
     @Put('admin/update-status/:id')

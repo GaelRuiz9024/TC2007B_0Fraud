@@ -49,6 +49,7 @@ export class RefreshTokenDto {
       example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
       description: 'Token de refresco emitido previamente al iniciar sesión.',
    })
+   @IsNotEmpty()
    refreshToken: string;
 }
 
@@ -64,16 +65,42 @@ export class AuthController {
       private readonly userService: UserService,
    ) {}
 
-   // ============================
-   // POST /auth/login
-   // ============================
+
+   @Get('profile')
+   @UseGuards(JwtAuthGuard)
+   @ApiBearerAuth()
+   @ApiOperation({
+      summary: 'Obtiene el perfil del usuario autenticado',
+      description: 'Usa el token de acceso para devolver la información completa del usuario logueado.',
+   })
+   @ApiResponse({
+      status: 200,
+      description: 'Perfil del usuario obtenido exitosamente.',
+      schema: {
+         example: {
+            profile: {
+               id: '1',
+               correo: 'admin@0fraud.com',
+               nombre: 'Admin',
+               apellidos: 'Root',
+               idRol: 1, // Crucial para la lógica de isAdmin en el frontend
+            },
+         },
+      },
+   })
+   /**
+    * Devuelve el perfil del usuario logueado. 
+    * El JwtAuthGuard adjunta el payload del token verificado a req.user.profile.
+    */
+   async getProfile(@Req() req: AuthenticatedRequest) {
+      return { profile: req.user.profile }; 
+   }
    @Post('login')
    @ApiOperation({
       summary: 'Inicia sesión de usuario',
       description:
          'Valida las credenciales de un usuario y devuelve un token de acceso (JWT) y un token de refresco.',
    })
-   // 🎉 CAMBIO APLICADO AQUÍ
    @ApiBody({ type: LoginDto })
    @ApiResponse({
       status: 200,

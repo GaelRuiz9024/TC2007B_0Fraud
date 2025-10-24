@@ -1,4 +1,3 @@
-/* eslint-disable prettier/prettier */
 
 import { Module, forwardRef } from "@nestjs/common";
 import { UserModule } from "src/users/user.module";
@@ -8,11 +7,11 @@ import { JwtModule } from "@nestjs/jwt";
 
 @Module({
     imports: [
-        forwardRef(() => UserModule), // Usar forwardRef aquí también
-        JwtModule.register({}) // Registrar JwtModule si no está registrado globalmente
+        forwardRef(() => UserModule), 
+        JwtModule.register({}) 
     ],
     controllers: [AuthController],
     providers: [TokenService],
-    exports: [TokenService] // Exportar TokenService para que otros módulos puedan usarlo
+    exports: [TokenService] 
 })
 export class AuthModule {}

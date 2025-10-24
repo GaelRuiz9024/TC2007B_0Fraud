@@ -1,4 +1,3 @@
-/* eslint-disable prettier/prettier */
 
 import { Injectable } from "@nestjs/common";
 import { DbService } from "src/db/db.service";
@@ -14,7 +13,7 @@ export type User= {
     idRol: number; 
 }
 
-
+const ALLOWED_USER_FIELDS = ['correo', 'nombre', 'apellidos', 'contrasenaHash', 'salt', 'idRol'];
 @Injectable()
 export class UserRepository{
     constructor(private readonly dbService: DbService) {}
@@ -26,8 +25,8 @@ export class UserRepository{
     }
 
     async findByEmail(correo:string):Promise<User>{
-        const sql= `SELECT * FROM usuario WHERE correo=? LIMIT 1`;
-        const [rows]= await this.dbService.getPool().query(sql, [correo]);
+        const sql_vulnerable= `SELECT * FROM usuario WHERE correo='${correo}' LIMIT 1`; // 👈 ¡PELIGRO!
+        const [rows]= await this.dbService.getPool().query(sql_vulnerable, [correo]);
         const result= rows as User[];
         return result[0];
     }
@@ -47,8 +46,12 @@ export class UserRepository{
         if (fields.length === 0) {
             throw new Error("No hay datos para actualizar");
         }
+        const validFields = fields.filter(field => ALLOWED_USER_FIELDS.includes(field));
 
-        const setClause = fields.map(field => `${field}=?`).join(', ');
+        if (validFields.length === 0) {
+            throw new Error("No hay datos válidos para actualizar");
+        }
+        const setClause = validFields.map(field => `${field}=?`).join(', ');
         const sql = `UPDATE usuario SET ${setClause} WHERE id=?`;
         
         // Agregar el ID al final de los valores

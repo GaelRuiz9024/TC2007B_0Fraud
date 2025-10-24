@@ -1,23 +1,29 @@
-// src/config/multer.config.ts
 import { diskStorage } from 'multer';
 import { extname } from 'path';
+import { randomBytes } from 'crypto'; 
 
 export const multerConfig = {
   storage: diskStorage({
-    destination: './uploads/images', // Directorio donde se guardarán las imágenes
+    destination: './uploads/images',
     filename: (req, file, callback) => {
-      const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+      const uniqueSuffix = Date.now() + '-' + randomBytes(8).toString('hex');
       const ext = extname(file.originalname);
       callback(null, `${file.fieldname}-${uniqueSuffix}${ext}`);
     },
   }),
-  fileFilter: (req, file, callback) => {
-    if (!file.originalname.match(/\.(jpg|jpeg|png|gif)$/)) {
-      return callback(new Error('Solo se permiten archivos de imagen (jpg, jpeg, png, gif)!'), false);
-    }
-    callback(null, true);
-  },
+  
   limits: {
-    fileSize: 5 * 1024 * 1024, // Limite de 5MB por imagen
+    fileSize: 5 * 1024 * 1024, // 5MB
+    files: 1,
+  },
+  
+  fileFilter: (req, file, callback) => {
+    const allowedMimes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+    
+    if (allowedMimes.includes(file.mimetype)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Tipo de archivo no permitido'), false);
+    }
   },
 };

@@ -22,6 +22,17 @@ type ReportImage = {
     urlImagen: string;
 }
 
+export type ReportDetail = {
+  id: number;
+  titulo: string;
+  autorNombre: string;
+  autorApellido: string;
+  categoriaNombre: string;
+  descripcion: string;
+  url: string;
+  imagenes: string[];
+};
+
 @Injectable()
 export class ReportRepository {
     constructor(private readonly dbService: DbService) {}
@@ -76,4 +87,34 @@ export class ReportRepository {
         const params = [status, adminId, reportId];
         await this.dbService.getPool().query(sql, params);
     }
+    async searchReportsByKeyword(keyword: string): Promise<Report[]> {
+        const sql = `
+            SELECT
+                r.id,
+                r.titulo,
+                r.descripcion,
+                r.urlPagina AS url,
+                r.fechaCreacion,
+                r.estado,
+                c.nombre AS categoriaNombre,
+                u.nombre AS autorNombre,
+                u.apellidos AS autorApellidos
+            FROM reporte r
+            LEFT JOIN categoria c ON r.idCategoria = c.id
+            LEFT JOIN usuario u ON r.idUsuario = u.id
+            WHERE (
+                r.titulo LIKE ?
+                OR r.descripcion LIKE ?
+                OR r.urlPagina LIKE ?
+                OR c.nombre LIKE ?
+            )
+            AND r.estado = 'Aprobado'
+            `;
+
+
+                const likeKeyword = `%${keyword}%`;
+                const [rows] = await this.dbService.getPool().query(sql, [likeKeyword, likeKeyword, likeKeyword, likeKeyword]);
+                const reports = rows as any[];
+                return this.enrichReportsList(reports);
+        }
 }

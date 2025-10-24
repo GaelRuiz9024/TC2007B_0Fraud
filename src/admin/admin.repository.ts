@@ -10,7 +10,7 @@ export type Admin= {
     contrasenaHash: string;
     salt: string;
 }
-
+const ALLOWED_ADMIN_UPDATE_FIELDS = ['correo', 'nombre', 'apellidos', 'contrasenaHash', 'salt', 'idRol'];
 @Injectable()
 export class AdminRepository{
     constructor(
@@ -31,23 +31,25 @@ export class AdminRepository{
         if (fields.length === 0) {
             throw new Error("No hay datos para actualizar");
         }
+        const validFields = fields.filter(field => ALLOWED_ADMIN_UPDATE_FIELDS.includes(field));
 
-        const setClause = fields.map(field => `${field}=?`).join(', ');
+        if (validFields.length === 0) {
+            throw new Error("No hay datos válidos para actualizar");
+        }
+        const setClause = validFields.map(field => `${field}=?`).join(', '); 
         const sql = `UPDATE usuario SET ${setClause} WHERE id=?`;
         
-        // Agregar el ID al final de los valores
         values.push(id);
         
         await this.dbService.getPool().query(sql, values);
         
-        // Retornar el usuario actualizado
         return this.userRepo.findById(id);
     }
 
     async getAllUsers(): Promise<User[]> {
         const sql = `SELECT * FROM usuario WHERE idRol=2 AND activo=1`;
         const [rows] = await this.dbService.getPool().query(sql, []);
-        return rows as User[]; // ✅ Devuelve todos los usuarios
+        return rows as User[]; 
     }
     async deleteUser(id: number): Promise<void> {
         const sql = `UPDATE usuario SET activo=0 WHERE id=?`; 

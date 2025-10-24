@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { AnalyticsRepository, ReportsByCategory, ReportStatusCount, TopReportedSites, HistoricalReportData, ReportsByMonth } from "./analytics.repository"; // 👈 Importar HistoricalReportData
+import { AnalyticsRepository, ReportsByCategory, TopReportedSites, HistoricalReportData, ReportsByMonth } from "./analytics.repository"; // 👈 Importar HistoricalReportData
 
 export type StatusPecentage= {
     status: string;

@@ -106,19 +106,25 @@ export class ReportController {
     return this.reportService.getAllReports();
   }
 
-  @Put('admin/update-status/:id')
-  @UseGuards(IsAdminGuard)
-  @ApiBearerAuth()
-  async updateReportStatus(
-    @Req() req: AuthenticatedRequest,
-    @Body() updateStatusDto: UpdateReportStatusDto,
-    @Query('id') id: string
-  ): Promise<void> {
-    const adminId = Number(req.user.id);
-    const reportId = Number(id);
-    await this.reportService.updateReportStatus(reportId, updateStatusDto.estado, adminId);
-  }
 
+    @Put('admin/update-status/:id')
+    @UseGuards(IsAdminGuard)
+    @ApiBearerAuth()
+    async updateReportStatus(
+      @Req() req: AuthenticatedRequest,
+      @Body() updateStatusDto: UpdateReportStatusDto,
+      @Param('id') id: string // <--- ¡CORREGIDO!
+    ): Promise<void> {
+      const adminId = Number(req.user.id);
+      const reportId = Number(id); // <--- 'id' ahora tendrá el valor correcto de la URL
+      
+      // Opcional: Añadir validación por si acaso
+      if (isNaN(reportId)) {
+        throw new BadRequestException('El ID del reporte debe ser un número válido.');
+      }
+
+      await this.reportService.updateReportStatus(reportId, updateStatusDto.estado, adminId);
+    }
   //Endpoint  
   @Get('search')
   @UseGuards(JwtAuthGuard)

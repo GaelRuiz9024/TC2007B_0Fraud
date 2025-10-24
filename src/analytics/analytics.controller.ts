@@ -1,4 +1,3 @@
-/* eslint-disable prettier/prettier */
 
 import { Controller, Get, Query, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';

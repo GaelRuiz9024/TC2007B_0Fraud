@@ -28,15 +28,21 @@ let CategoryRepository = class CategoryRepository {
         return rows;
     }
     async updateCategory(id, updateData) {
-        const fields = Object.keys(updateData);
-        const values = Object.values(updateData);
-        if (fields.length === 0) {
-            throw new Error("No hay datos para actualizar");
+        const fieldsToUpdate = Object.keys(updateData).filter(key => key !== 'id' && updateData[key] !== undefined);
+        if (fieldsToUpdate.length === 0) {
+            console.warn(`No valid fields provided to update category ${id}. Returning current data.`);
+            return this.findById(id);
         }
-        const setClause = fields.filter(field => field !== 'id').map(field => `${field}=?`).join(', ');
-        const updateValues = values.slice(0, fields.length - (fields.includes('id') ? 1 : 0));
+        const setClause = fieldsToUpdate.map(field => `\`${field}\`=?`).join(', ');
+        const valuesToUpdate = fieldsToUpdate.map(field => updateData[field]);
         const sql = `UPDATE categoria SET ${setClause} WHERE id=?`;
-        await this.dbService.getPool().query(sql, [...updateValues, id]);
+        try {
+            await this.dbService.getPool().query(sql, [...valuesToUpdate, id]);
+        }
+        catch (error) {
+            console.error(`Error updating category ${id}:`, error);
+            throw error;
+        }
         return this.findById(id);
     }
     async deleteCategory(id) {

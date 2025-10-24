@@ -1,7 +1,5 @@
-/* eslint-disable prettier/prettier */
 
 import { CanActivate, ExecutionContext, Injectable, UnauthorizedException } from "@nestjs/common";
-import { Request } from "express";
 import { TokenService } from "src/auth/tokens.service";
 import { AuthenticatedRequest } from "../interfaces/authenticated-request";
 import { JwtAuthGuard } from "./jwt-auth.guard";

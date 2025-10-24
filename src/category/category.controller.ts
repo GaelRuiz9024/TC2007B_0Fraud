@@ -2,7 +2,7 @@
 
 import { Body, Controller, Delete, Get, Param, Post, Put, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiProperty, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { IsIn, IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
+import { IsIn, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard'
 import { IsAdminGuard } from 'src/common/guards/is-admin.guard';
 import { Category } from './category.repository';

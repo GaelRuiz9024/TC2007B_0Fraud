@@ -1,4 +1,3 @@
-/* eslint-disable prettier/prettier */
 
 import { Injectable, NotFoundException } from "@nestjs/common";
 import { TipsRepository } from "./tips.repository";

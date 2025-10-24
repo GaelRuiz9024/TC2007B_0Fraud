@@ -95,6 +95,9 @@ let ReportController = class ReportController {
     async updateReportStatus(req, updateStatusDto, id) {
         const adminId = Number(req.user.id);
         const reportId = Number(id);
+        if (isNaN(reportId)) {
+            throw new common_1.BadRequestException('El ID del reporte debe ser un número válido.');
+        }
         await this.reportService.updateReportStatus(reportId, updateStatusDto.estado, adminId);
     }
     async searchReports(query) {
@@ -156,7 +159,7 @@ __decorate([
     (0, swagger_1.ApiBearerAuth)(),
     __param(0, (0, common_1.Req)()),
     __param(1, (0, common_1.Body)()),
-    __param(2, (0, common_1.Query)('id')),
+    __param(2, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object, UpdateReportStatusDto, String]),
     __metadata("design:returntype", Promise)

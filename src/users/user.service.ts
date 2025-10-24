@@ -1,9 +1,7 @@
-/* eslint-disable prettier/prettier */
 
 import { Injectable, NotFoundException, UnauthorizedException } from "@nestjs/common";
 import { User, UserRepository } from "./user.repository";
 import { sha256 } from "src/util/crypto/hash.util";
-import { hash } from "crypto";
 
 export type UserDto={
     correo: string;

@@ -1,4 +1,3 @@
-/* eslint-disable prettier/prettier */
 
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { Report, ReportDetail, ReportRepository } from './report.repository';

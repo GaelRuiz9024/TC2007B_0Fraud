@@ -1,7 +1,9 @@
+/* eslint-disable prettier/prettier */
 
 import { Injectable, NotFoundException, UnauthorizedException } from "@nestjs/common";
 import { User, UserRepository } from "./user.repository";
 import { sha256 } from "src/util/crypto/hash.util";
+import { hash } from "crypto";
 
 export type UserDto={
     correo: string;
@@ -12,7 +14,6 @@ export type UserDto={
 export interface UpdateUserData {
     correo?: string;
     nombre?: string;
-    apellidos?: string;
     contrasena?: string;
 }
 
@@ -53,11 +54,8 @@ export class UserService {
             dataToUpdate.correo = updateData.correo;
         }
         
-        if (updateData.nombre !== undefined) {
+        if (updateData.correo !== undefined) {
             dataToUpdate.nombre = updateData.nombre;
-        }
-        if (updateData.apellidos !== undefined) {
-            dataToUpdate.apellidos = updateData.apellidos;
         }
         
         if (updateData.contrasena !== undefined) {

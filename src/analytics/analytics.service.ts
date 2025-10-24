@@ -1,9 +1,5 @@
 import { Injectable } from "@nestjs/common";
-<<<<<<< Updated upstream
-import { AnalyticsRepository, ReportsByCategory,  TopReportedSites, HistoricalReportData } from "./analytics.repository"; // 👈 Importar HistoricalReportData
-=======
 import { AnalyticsRepository, ReportsByCategory, ReportStatusCount, TopReportedSites, HistoricalReportData, ReportsByMonth } from "./analytics.repository"; // 👈 Importar HistoricalReportData
->>>>>>> Stashed changes
 
 export type StatusPecentage= {
     status: string;

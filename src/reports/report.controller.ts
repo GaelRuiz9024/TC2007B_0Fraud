@@ -1,9 +1,8 @@
-/* eslint-disable prettier/prettier */
 
 
 import { Body, Controller, Get, Post, Put, Req, UseGuards, Param, UploadedFile, UseInterceptors, BadRequestException, Query } from '@nestjs/common';
 import {ReportService} from './report.service'
-import { Report, ReportRepository } from './report.repository';
+import { Report } from './report.repository';
 import { ApiBearerAuth, ApiOperation, ApiProperty, ApiResponse, ApiTags, ApiConsumes} from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard'
 import { IsAdminGuard } from 'src/common/guards/is-admin.guard'
@@ -12,10 +11,8 @@ import { IsIn, IsNotEmpty, IsNumber, IsOptional, IsString,IsUrl } from 'class-va
 import type { Request } from 'express'; // Importar Request de express
 
 
-// <--- NUEVAS IMPORTACIONES PARA IMAGENES --->
 import { FileInterceptor } from '@nestjs/platform-express';
 import { multerConfig } from 'src/config/multer.config'; // Importar la configuración de Multer
-import { join } from 'path'; // Para construir la URL de la imagen
 export class CreateReportDto {
   @ApiProperty({ example: 'Phishing en sitio web', description: 'Título del reporte' })
   @IsNotEmpty()
@@ -68,7 +65,7 @@ export class ReportController {
     return this.reportService.getReportsByUserId(userId);
   }
     @Post(':reportId/images')
-    @UseGuards(JwtAuthGuard) // Asegura que solo usuarios autenticados puedan subir imágenes
+    @UseGuards(JwtAuthGuard) 
     @UseInterceptors(FileInterceptor('image', multerConfig)) // 'image' es el nombre del campo del formulario
     @ApiConsumes('multipart/form-data') // Especifica el tipo de contenido para Swagger
     @ApiProperty({ type: 'string', format: 'binary', description: 'Archivo de imagen (.jpg, .jpeg, .png, .gif)' }) // Para Swagger

@@ -1,4 +1,3 @@
-/* eslint-disable prettier/prettier */
 
 import { Module } from '@nestjs/common';
 import { CategoryController, UsersCategoryController } from './category.controller';

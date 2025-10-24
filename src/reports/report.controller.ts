@@ -128,15 +128,39 @@ export class ReportController {
   }
 
 
+    @Put('admin/update-status/:id')
+    @UseGuards(IsAdminGuard)
+    @ApiBearerAuth()
+    @ApiOperation({ summary: 'Actualizar el estado de un reporte (para administradores)' })
+    @ApiResponse({ status: 200, description: 'Estado del reporte actualizado.' })
+    @ApiResponse({ status: 401, description: 'No autorizado.' })
+    async updateReportStatus(@Req() req: AuthenticatedRequest, @Param('id') id: string, @Body() updateStatusDto: UpdateReportStatusDto) : Promise<void> {
+        const adminId = Number(req.user.id)
+        const reportId = Number(id);
+        await this.reportService.updateReportStatus(reportId, updateStatusDto.estado, adminId);
+    }
+
+    @Get('search')
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    async searchReports(@Query('q') query: string): Promise<Report[]> {
+      console.log("SI FUNCIONA")
+      if (!query) return [];
+      const reports = await this.reportService.searchReports(query); 
+      return reports;
+    }
+
+
+
 }
 
-//Dto detalle
 export class ReportDetailDto {
-  id: number;
-  titulo: string;
-  autorNombre: string;
-  categoriaNombre: string;
-  descripcion: string;
-  url: string;
-  imagenes: string[];
+    id: number;
+    titulo: string;
+    autorNombre: string;
+    autorApellido: string;
+    categoriaNombre: string;
+    descripcion: string;
+    url: string;
+    imagenes: string[];
 }

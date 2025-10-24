@@ -34,9 +34,7 @@ export class ReportService {
     }
     await this.reportRepository.addImageToReport(reportId, imageUrl);
   }
-
-  // endpoints
-  async mapReportToDto(report: ReportDetail): Promise<ReportDetailDto> {
+  async mapReportToDto(report: ReportDetailDto): Promise<ReportDetailDto> {
     const autorCompleto = report.autorNombre
       ? `${report.autorNombre} ${report.autorApellido ?? ''}`.trim()
       : 'Anónimo';
@@ -45,6 +43,7 @@ export class ReportService {
       id: report.id,
       titulo: report.titulo,
       autorNombre: autorCompleto,
+      autorApellido: report.autorApellido,
       categoriaNombre: report.categoriaNombre ?? 'Sin categoría',
       descripcion: report.descripcion,
       url: report.url,
@@ -55,5 +54,4 @@ export class ReportService {
   async searchReports(keyword: string): Promise<Report[]> {
         return this.reportRepository.searchReportsByKeyword(keyword);
     }
- 
 }

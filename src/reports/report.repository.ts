@@ -18,6 +18,17 @@ export type Report = {
 
 }
 
+export type ReportDetail = {
+  id: number;
+  titulo: string;
+  autorNombre: string;
+  autorApellido: string;
+  categoriaNombre: string;
+  descripcion: string;
+  url: string;
+  imagenes: string[];
+};
+
 type ReportImage = {
     urlImagen: string;
 }
@@ -87,6 +98,7 @@ export class ReportRepository {
         const params = [status, adminId, reportId];
         await this.dbService.getPool().query(sql, params);
     }
+
     async searchReportsByKeyword(keyword: string): Promise<Report[]> {
         const sql = `
             SELECT

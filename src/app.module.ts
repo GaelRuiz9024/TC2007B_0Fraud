@@ -13,6 +13,7 @@ import { AdminModule } from './admin/admin.module';
 import { ReportModule } from './reports/report.module';
 import { CategoryModule } from './category/category.module';
 import { AnalyticsModule } from './analytics/analytics.module'; // 👈 **NUEVA IMPORTACIÓN**
+import { TipsModule } from './tips/tips.module';
 
 
 @Module({
@@ -20,7 +21,7 @@ import { AnalyticsModule } from './analytics/analytics.module'; // 👈 **NUEVA 
       global: true,
       secret:process.env.JWT_SECRET || 'supersecret',
   }), 
-  DbModule, UserModule, AuthModule, AdminModule,ReportModule,CategoryModule, AnalyticsModule], 
+  DbModule, UserModule, AuthModule, AdminModule, ReportModule, CategoryModule, AnalyticsModule, TipsModule], 
   controllers: [AppController],
   providers: [AppService],
 })

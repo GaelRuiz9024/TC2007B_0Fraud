@@ -18,6 +18,7 @@ const admin_module_1 = require("./admin/admin.module");
 const report_module_1 = require("./reports/report.module");
 const category_module_1 = require("./category/category.module");
 const analytics_module_1 = require("./analytics/analytics.module");
+const tips_module_1 = require("./tips/tips.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -27,7 +28,7 @@ exports.AppModule = AppModule = __decorate([
                 global: true,
                 secret: process.env.JWT_SECRET || 'supersecret',
             }),
-            db_module_1.DbModule, user_module_1.UserModule, auth_module_1.AuthModule, admin_module_1.AdminModule, report_module_1.ReportModule, category_module_1.CategoryModule, analytics_module_1.AnalyticsModule],
+            db_module_1.DbModule, user_module_1.UserModule, auth_module_1.AuthModule, admin_module_1.AdminModule, report_module_1.ReportModule, category_module_1.CategoryModule, analytics_module_1.AnalyticsModule, tips_module_1.TipsModule],
         controllers: [app_controller_1.AppController],
         providers: [app_service_1.AppService],
     })

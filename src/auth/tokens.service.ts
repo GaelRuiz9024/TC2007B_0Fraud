@@ -30,7 +30,11 @@ export class TokenService{
             type: "access",
             profile: profile
         },{
+<<<<<<< Updated upstream
             expiresIn: "10m",
+=======
+            expiresIn: "15m",
+>>>>>>> Stashed changes
             secret: JWT_SECRET
         })
     }

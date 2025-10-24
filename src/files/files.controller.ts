@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 
 import { Controller, Post, UploadedFile, UseInterceptors } from "@nestjs/common";
 import { diskStorage } from "multer";

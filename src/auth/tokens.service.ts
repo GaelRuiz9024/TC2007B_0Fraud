@@ -30,7 +30,7 @@ export class TokenService{
             type: "access",
             profile: profile
         },{
-            expiresIn: "15m",
+            expiresIn: "10m",
             secret: JWT_SECRET
         })
     }

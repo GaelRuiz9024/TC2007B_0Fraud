@@ -1,28 +1,19 @@
-import { Controller, Get, UseGuards } from '@nestjs/common';
-import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
-import { TipsService } from './tips.service';
+/* eslint-disable prettier/prettier */
 
-@ApiTags('Tips de Ciberseguridad')
+import { Controller, Get } from "@nestjs/common";
+import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
+import { TipsService } from "./tips.service";
+
+@ApiTags('Tips')
 @Controller('tips')
 export class TipsController {
     constructor(private readonly tipsService: TipsService) {}
 
     @Get('daily')
-    @UseGuards(JwtAuthGuard)
-    @ApiBearerAuth()
-    @ApiOperation({ summary: 'Obtener el tip de ciberseguridad correspondiente al día actual (calculado internamente)' })
-    @ApiResponse({ 
-        status: 200, 
-        description: 'Tip del día obtenido exitosamente.',
-        schema: {
-            example: {
-                titulo: 'Contraseñas Fuertes',
-                contenido: 'Usa combinaciones de mayúsculas, minúsculas, números y símbolos. Evita datos personales.'
-            }
-        }
-    })
-    async getDailyTip(): Promise<{ titulo: string, contenido: string }> {
-        return this.tipsService.getTipOfTheDay();
+    @ApiOperation({ summary: 'Obtener el tip del día basado en la fecha actual' })
+    @ApiResponse({ status: 200, description: 'Tip del día obtenido exitosamente' })
+    @ApiResponse({ status: 404, description: 'No se encontró tip para el día actual' })
+    async getDailyTip() {
+        return this.tipsService.getDailyTip();
     }
 }

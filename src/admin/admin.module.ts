@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 
 import { Module, forwardRef } from "@nestjs/common";
 import { adminController } from "./admin.controller";
@@ -8,7 +9,7 @@ import { UserModule } from "src/users/user.module";
 
 @Module({
   imports: [
-    forwardRef(() => AuthModule), 
+    forwardRef(() => AuthModule), // Usar forwardRef para evitar dependencias circulares
     UserModule
   ],
   controllers: [adminController],

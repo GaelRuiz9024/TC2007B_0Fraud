@@ -1,38 +1,35 @@
-// src/tips/tips.service.ts
+/* eslint-disable prettier/prettier */
+
 import { Injectable, NotFoundException } from "@nestjs/common";
-import {  TipsRepository } from "./tips.repository";
+import { TipsRepository } from "./tips.repository";
+
+export interface TipDto {
+    titulo: string;
+    contenido: string;
+}
 
 @Injectable()
 export class TipsService {
     constructor(private readonly tipsRepository: TipsRepository) {}
 
-    private calculateDayOfYear(date: Date): number {
-        const start = new Date(date.getFullYear(), 0, 0);
-        const diff = date.getTime() - start.getTime();
+    async getDailyTip(): Promise<TipDto> {
+        // Calcular el día del año (1-365)
+        const now = new Date();
+        const start = new Date(now.getFullYear(), 0, 0);
+        const diff = now.getTime() - start.getTime();
         const oneDay = 1000 * 60 * 60 * 24;
-        return Math.floor(diff / oneDay);
-    }
+        const dayOfYear = Math.floor(diff / oneDay);
 
-    /**
-     * Obtiene el tip de ciberseguridad para el día actual, calculado internamente.
-     * @returns El tip del día (titulo y contenido).
-     */
-    async getTipOfTheDay(): Promise<{ titulo: string, contenido: string }> {
-        const today = new Date();
-        const dayOfYear = this.calculateDayOfYear(today);
-        
-        const tip = await this.tipsRepository.findTipByDay(dayOfYear);
+        // Obtener el tip correspondiente al día
+        const tip = await this.tipsRepository.getTipByDayOfYear(dayOfYear);
 
         if (!tip) {
-            const defaultTip = await this.tipsRepository.findTipByDay(1); 
-            if (defaultTip) return defaultTip;
-
-            throw new NotFoundException('Tip de ciberseguridad no encontrado para hoy.');
+            throw new NotFoundException(`No se encontró tip para el día ${dayOfYear}`);
         }
 
         return {
             titulo: tip.titulo,
-            contenido: tip.contenido,
+            contenido: tip.contenido
         };
     }
 }

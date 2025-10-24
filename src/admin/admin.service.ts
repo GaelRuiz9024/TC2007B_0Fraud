@@ -6,13 +6,13 @@ import { sha256 } from "src/util/crypto/hash.util";
 export type AdminDto={
     correo: string;
     nombre: string;
-    apellidos: string;
 }
 
 @Injectable()
 export class AdminService {
     constructor(
         private readonly adminRepository: AdminRepository,
+        private readonly userDto: UserService
     ) {}
     async registerAdmin(correo: string, nombre: string, apellidos:string, contrasena: string): Promise<Admin | void> {
         console.log("Aqui hacemos el hash del contrasena");
@@ -43,20 +43,10 @@ export class AdminService {
         if (updateData.nombre !== undefined) {
             dataToUpdate.nombre = updateData.nombre;
         }   
-        if (updateData.apellidos !== undefined) { 
-            dataToUpdate.apellidos = updateData.apellidos;
-        }
-
         if (updateData.contrasena !== undefined) {
-            dataToUpdate.contrasenaHash = sha256(updateData.contrasena);
+            dataToUpdate.contrasena_hash = sha256(updateData.contrasena);
         }
-       const updatedUser = await this.adminRepository.updateUserAdmin(id, dataToUpdate);
-        
-        return {
-            correo: updatedUser.correo,
-            nombre: updatedUser.nombre,
-            apellidos: updatedUser.apellidos
-        };
+        return this.userDto.updateUser(id, dataToUpdate);
     }
 
      async updateRole(id: number, idRol: number): Promise<UserDto> {

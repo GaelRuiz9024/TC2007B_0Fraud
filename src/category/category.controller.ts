@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 
 import { Body, Controller, Delete, Get, Param, Post, Put, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiProperty, ApiResponse, ApiTags } from '@nestjs/swagger';
@@ -83,6 +84,10 @@ export class CategoryController {
         await this.categoryService.deleteCategory(categoryId);
     }
 }
+
+
+
+
 @ApiTags('Categorías')
 @Controller('categories')
 
@@ -95,7 +100,7 @@ export class UsersCategoryController {
   @ApiOperation({ summary: 'Obtener todas las categorías' })
   @ApiResponse({ status: 200, description: 'Lista de categorías' })
   async findCategories(): Promise<Category[]> {
-    const all = await this.categoryService.findAllCategories();
+    const all = await this.categoryService.findCategories();
     return all.filter(c => c.activa === 1);
   }
 }

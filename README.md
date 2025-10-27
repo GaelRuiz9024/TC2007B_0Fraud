@@ -193,6 +193,8 @@ Creado como parte del proyecto académico **0 Fraud** para promover la **ciberse
 **Autores:**
 
 * Gael Alejandro Ruiz Bahena
+* Eleanor Alarcón Neri
+* Emma Sofia Aparicio Rodriguez 
 * Equipo de desarrollo 0 Fraud
 
 **Versión:** 1.0.0

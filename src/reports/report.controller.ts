@@ -1,21 +1,16 @@
-/* eslint-disable prettier/prettier */
-
 
 import { Body, Controller, Get, Post, Put, Req, UseGuards, Param, UploadedFile, UseInterceptors, BadRequestException, Query } from '@nestjs/common';
 import {ReportService} from './report.service'
-import { Report, ReportRepository } from './report.repository';
-import { ApiBearerAuth, ApiOperation, ApiProperty, ApiResponse, ApiTags, ApiConsumes} from '@nestjs/swagger';
-import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard'
+import type { Report } from './report.repository';
+import { ApiBearerAuth, ApiOperation, ApiProperty, ApiResponse, ApiTags, ApiConsumes, ApiBody, ApiParam, ApiQuery} from '@nestjs/swagger';import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard'
 import { IsAdminGuard } from 'src/common/guards/is-admin.guard'
 import type { AuthenticatedRequest } from 'src/common/interfaces/authenticated-request'
 import { IsIn, IsNotEmpty, IsNumber, IsOptional, IsString,IsUrl } from 'class-validator';
-import type { Request } from 'express'; // Importar Request de express
-
-
-// <--- NUEVAS IMPORTACIONES PARA IMAGENES --->
+import type { Request } from 'express'; 
 import { FileInterceptor } from '@nestjs/platform-express';
-import { multerConfig } from 'src/config/multer.config'; // Importar la configuración de Multer
-import { join } from 'path'; // Para construir la URL de la imagen
+import { multerConfig } from 'src/config/multer.config';
+
+
 export class CreateReportDto {
   @ApiProperty({ example: 'Phishing en sitio web', description: 'Título del reporte' })
   @IsNotEmpty()
@@ -46,6 +41,28 @@ export class UpdateReportStatusDto {
   estado: string;
 }
 
+export class ReportDetailDto {
+  @ApiProperty()
+  id: number;
+  
+  @ApiProperty()
+  titulo: string;
+  
+  @ApiProperty()
+  autorNombre: string;
+  
+  @ApiProperty()
+  categoriaNombre: string;
+  
+  @ApiProperty()
+  descripcion: string;
+  
+  @ApiProperty({ example: "https://sitio-malicioso.com" })
+  url: string;
+  
+  @ApiProperty({ type: [String], example: ["http://localhost:4000/uploads/images/imagen.png"] })
+  imagenes: string[];
+}
 
 @ApiTags('Reports')
 @Controller('reports')
@@ -55,6 +72,10 @@ export class ReportController {
   @Post()
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
+  @ApiOperation({ summary: 'Crear un nuevo reporte' }) 
+  @ApiResponse({ status: 201, description: 'Reporte creado exitosamente' }) 
+  @ApiResponse({ status: 401, description: 'No autorizado' }) 
+  @ApiResponse({ status: 400, description: 'Datos inválidos' }) 
   async createReport(@Req() req: AuthenticatedRequest, @Body() reportDto: CreateReportDto): Promise<void> {
     const userId = Number(req.user.id);
     await this.reportService.createReport(userId, reportDto);
@@ -63,89 +84,108 @@ export class ReportController {
   @Get('my-reports')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
+  @ApiOperation({ summary: 'Obtener los reportes creados por el usuario autenticado' }) 
+  @ApiResponse({ status: 200, description: 'Lista de mis reportes', type: [ReportDetailDto] }) 
+  @ApiResponse({ status: 401, description: 'No autorizado' }) 
   async getMyReports(@Req() req: AuthenticatedRequest): Promise<any> {
     const userId = Number(req.user.id);
     return this.reportService.getReportsByUserId(userId);
   }
-    @Post(':reportId/images')
-    @UseGuards(JwtAuthGuard) // Asegura que solo usuarios autenticados puedan subir imágenes
-    @UseInterceptors(FileInterceptor('image', multerConfig)) // 'image' es el nombre del campo del formulario
-    @ApiConsumes('multipart/form-data') // Especifica el tipo de contenido para Swagger
-    @ApiProperty({ type: 'string', format: 'binary', description: 'Archivo de imagen (.jpg, .jpeg, .png, .gif)' }) // Para Swagger
-    @ApiOperation({ summary: 'Subir una imagen a un reporte existente' })
-    @ApiResponse({ status: 201, description: 'Imagen subida y asociada al reporte exitosamente.' })
-    @ApiResponse({ status: 400, description: 'Solicitud inválida o archivo no permitido.' })
-    @ApiResponse({ status: 404, description: 'Reporte no encontrado.' })
-    async uploadImage(
-        @Param('reportId') reportId: string,
-        @UploadedFile() file: Express.Multer.File,
-        @Req() req: Request // Para obtener la URL base del servidor
-    ): Promise<{ message: string; imageUrl: string }> {
-        
-        if (!file) {
-        throw new BadRequestException('No se ha proporcionado ningún archivo de imagen.');
-        }
+  
+  @Post(':reportId/images')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth() 
+  @UseInterceptors(FileInterceptor('image', multerConfig)) 
+  @ApiConsumes('multipart/form-data') 
+  @ApiOperation({ summary: 'Subir una imagen a un reporte existente' })
+  @ApiParam({ name: 'reportId', description: 'ID del reporte al que se añade la imagen', type: Number }) 
+  @ApiBody({
+    description: 'Archivo de imagen (.jpg, .jpeg, .png, .gif)',
+    schema: {
+      type: 'object',
+      properties: {
+        image: { 
+          type: 'string',
+          format: 'binary',
+        },
+      },
+    },
+  })
+  @ApiResponse({ status: 201, description: 'Imagen subida y asociada al reporte exitosamente.' })
+  @ApiResponse({ status: 400, description: 'Solicitud inválida o archivo no permitido.' })
+  @ApiResponse({ status: 401, description: 'No autorizado' }) 
+  @ApiResponse({ status: 404, description: 'Reporte no encontrado.' })
+  async uploadImage(
+      @Param('reportId') reportId: string,
+      @UploadedFile() file: Express.Multer.File,
+      @Req() req: Request 
+  ): Promise<{ message: string; imageUrl: string }> {
+      
+      if (!file) {
+      throw new BadRequestException('No se ha proporcionado ningún archivo de imagen.');
+      }
 
-        const numericReportId = Number(reportId);
-        if (isNaN(numericReportId)) {
-            throw new BadRequestException('El ID del reporte debe ser un número válido.');
-        }
+      const numericReportId = Number(reportId);
+      if (isNaN(numericReportId)) {
+          throw new BadRequestException('El ID del reporte debe ser un número válido.');
+      }
 
-        const baseUrl = `${req.protocol}://${req.get('host')}`;
-        const imageUrl = `${baseUrl}/uploads/images/${file.filename}`;
+      const baseUrl = `${req.protocol}://${req.get('host')}`;
+      const imageUrl = `${baseUrl}/uploads/images/${file.filename}`;
 
-        await this.reportService.uploadReportImage(numericReportId, imageUrl);
+      await this.reportService.uploadReportImage(numericReportId, imageUrl);
 
-        return { message: 'Imagen subida exitosamente.', imageUrl };
-    }
+      return { message: 'Imagen subida exitosamente.', imageUrl };
+  }
 
   @Get('admin/all-reports')
   @UseGuards(IsAdminGuard)
   @ApiBearerAuth()
+  @ApiOperation({ summary: 'Obtener todos los reportes (Admin)' }) 
+  @ApiResponse({ status: 200, description: 'Lista de todos los reportes', type: [ReportDetailDto] }) 
+  @ApiResponse({ status: 401, description: 'No autorizado' }) 
+  @ApiResponse({ status: 403, description: 'Prohibido (No es admin)' }) 
   async getAllReports(): Promise<Report[]> {
-    return this.reportService.getAllReports();
+    return this.reportService.getAllReports(); 
   }
 
 
     @Put('admin/update-status/:id')
     @UseGuards(IsAdminGuard)
     @ApiBearerAuth()
+    @ApiOperation({ summary: 'Actualizar el estado de un reporte (Admin)' }) 
+    @ApiParam({ name: 'id', description: 'ID del reporte a actualizar', type: Number }) 
+    @ApiResponse({ status: 200, description: 'Estado actualizado exitosamente.' }) 
+    @ApiResponse({ status: 401, description: 'No autorizado' }) 
+    @ApiResponse({ status: 403, description: 'Prohibido (No es admin)' }) 
+    @ApiResponse({ status: 404, description: 'Reporte no encontrado' })
     async updateReportStatus(
       @Req() req: AuthenticatedRequest,
       @Body() updateStatusDto: UpdateReportStatusDto,
-      @Param('id') id: string // <--- ¡CORREGIDO!
+      @Param('id') id: string
     ): Promise<void> {
       const adminId = Number(req.user.id);
-      const reportId = Number(id); // <--- 'id' ahora tendrá el valor correcto de la URL
+      const reportId = Number(id); 
       
-      // Opcional: Añadir validación por si acaso
       if (isNaN(reportId)) {
         throw new BadRequestException('El ID del reporte debe ser un número válido.');
       }
 
       await this.reportService.updateReportStatus(reportId, updateStatusDto.estado, adminId);
     }
-  //Endpoint  
   @Get('search')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
+  @ApiOperation({ summary: 'Buscar reportes por término (título o URL)' }) 
+  @ApiQuery({ name: 'q', description: 'Término de búsqueda', type: String, required: true }) 
+  @ApiResponse({ status: 200, description: 'Resultados de la búsqueda', type: [ReportDetailDto] }) 
+  @ApiResponse({ status: 401, description: 'No autorizado' }) 
   async searchReports(@Query('q') query: string): Promise<Report[]> {
     console.log("SI FUNCIONA")
     if (!query) return [];
     const reports = await this.reportService.searchReports(query); 
     return reports;
   }
-
-
 }
 
-//Dto detalle
-export class ReportDetailDto {
-  id: number;
-  titulo: string;
-  autorNombre: string;
-  categoriaNombre: string;
-  descripcion: string;
-  url: string;
-  imagenes: string[];
-}
+

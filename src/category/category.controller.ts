@@ -1,14 +1,11 @@
-/* eslint-disable prettier/prettier */
-
 import { Body, Controller, Delete, Get, Param, Post, Put, UseGuards } from '@nestjs/common';
-import { ApiBearerAuth, ApiOperation, ApiProperty, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiProperty, ApiResponse, ApiTags, ApiParam } from '@nestjs/swagger';
 import { IsIn, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard'
 import { IsAdminGuard } from 'src/common/guards/is-admin.guard';
 import { Category } from './category.repository';
 import { CategoryService } from './category.service';
 
-// DTOs para Swagger y Validación
 export class CreateCategoryBody {
   @ApiProperty({ example: 'Phishing', description: 'Nombre de la nueva categoría' })
   @IsNotEmpty()
@@ -42,6 +39,19 @@ export class UpdateCategoryBody {
     @IsIn([0, 1])
     activa?: 0 | 1;
 }
+export class CategoryResponseDto {
+    @ApiProperty({ example: 1, description: 'ID de la categoría' })
+    id: number;
+
+    @ApiProperty({ example: 'Phishing', description: 'Nombre de la categoría' })
+    nombre: string;
+
+    @ApiProperty({ example: 'Sitios que intentan robar credenciales', description: 'Descripción' })
+    descripcion: string;
+
+    @ApiProperty({ example: 1, description: '0 = Inactiva, 1 = Activa', enum: [0, 1] })
+    activa: 0 | 1;
+}
 
 @ApiTags('Admin - Gestión de Categorías')
 @ApiBearerAuth()
@@ -61,15 +71,20 @@ export class CategoryController {
 
     @Get()
     @ApiOperation({ summary: 'Obtener todas las categorías' })
-    @ApiResponse({ status: 200, description: 'Lista de categorías obtenida.' })
+    @ApiResponse({ status: 200, description: 'Lista de categorías obtenida.', type: [CategoryResponseDto] }) 
+    @ApiResponse({ status: 401, description: 'No autorizado.' }) 
+    @ApiResponse({ status: 403, description: 'Prohibido.' }) 
     async findAll(): Promise<Category[]> {
         return this.categoryService.findAllCategories();
     }
 
     @Put(':id')
     @ApiOperation({ summary: 'Actualizar una categoría existente' })
-    @ApiResponse({ status: 200, description: 'Categoría actualizada exitosamente.' })
+    @ApiParam({ name: 'id', description: 'ID de la categoría a eliminar', type: Number }) 
+    @ApiResponse({ status: 200, description: 'Categoría eliminada exitosamente.' })
     @ApiResponse({ status: 404, description: 'Categoría no encontrada.' })
+    @ApiResponse({ status: 401, description: 'No autorizado.' }) 
+    @ApiResponse({ status: 403, description: 'Prohibido.' }) 
     async update(@Param('id') id: string, @Body() updateDto: UpdateCategoryBody): Promise<Category> {
         const categoryId = Number(id);
         return this.categoryService.updateCategory(categoryId, updateDto);
@@ -77,8 +92,11 @@ export class CategoryController {
 
     @Delete(':id')
     @ApiOperation({ summary: 'Eliminar una categoría' })
+    @ApiParam({ name: 'id', description: 'ID de la categoría a eliminar', type: Number }) 
     @ApiResponse({ status: 200, description: 'Categoría eliminada exitosamente.' })
     @ApiResponse({ status: 404, description: 'Categoría no encontrada.' })
+    @ApiResponse({ status: 401, description: 'No autorizado.' }) 
+    @ApiResponse({ status: 403, description: 'Prohibido.' }) 
     async delete(@Param('id') id: string): Promise<void> {
         const categoryId = Number(id);
         await this.categoryService.deleteCategory(categoryId);
@@ -90,17 +108,16 @@ export class CategoryController {
 
 @ApiTags('Categorías')
 @Controller('categories')
-
 export class UsersCategoryController {
-  constructor(private readonly categoryService: CategoryService) {}
-
-  @ApiBearerAuth()
-  @UseGuards(JwtAuthGuard)
-  @Get()
-  @ApiOperation({ summary: 'Obtener todas las categorías' })
-  @ApiResponse({ status: 200, description: 'Lista de categorías' })
-  async findCategories(): Promise<Category[]> {
-    const all = await this.categoryService.findCategories();
-    return all.filter(c => c.activa === 1);
-  }
+    constructor(private readonly categoryService: CategoryService) {}
+    @ApiBearerAuth()
+    @UseGuards(JwtAuthGuard)
+    @Get()
+    @ApiOperation({ summary: 'Obtener todas las categorías' })
+    @ApiResponse({ status: 200, description: 'Lista de categorías activas', type: [CategoryResponseDto] }) 
+    @ApiResponse({ status: 401, description: 'No autorizado.' }) 
+    async findCategories(): Promise<Category[]> {
+      const all = await this.categoryService.findCategories();
+      return all.filter(c => c.activa === 1);
+    }
 }

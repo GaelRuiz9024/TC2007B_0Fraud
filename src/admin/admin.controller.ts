@@ -1,7 +1,6 @@
 import { Body, Controller, Post, Put, Req, Delete, UseGuards, Param, Get } from "@nestjs/common";
 import { AdminDto, AdminService } from "./admin.service";
-import { ApiProperty, ApiResponse, ApiTags, ApiBearerAuth, ApiOperation } from "@nestjs/swagger";
-import { JwtAuthGuard } from "src/common/guards/jwt-auth.guard";
+import { ApiProperty, ApiResponse, ApiTags, ApiBearerAuth, ApiOperation,ApiBody, ApiParam } from "@nestjs/swagger";
 import { IsAdminGuard } from "src/common/guards/is-admin.guard";
 import { IsIn, IsInt, IsNotEmpty } from "class-validator";
 
@@ -33,11 +32,19 @@ export class UpdateUserRoleDto {
     @IsIn([1, 2])
     idRol: number;
 }
+export class AdminResponseDto {
+    @ApiProperty({example:"admin@example.com", description:"Correo del administrador"})
+    correo: string;
+    @ApiProperty({example:"Admin Ejemplo", description:"Nombre del administrador"})
+    nombre: string;
+}
 @ApiTags("Endpoints de Administradores")
 @Controller("admin")
 export class adminController{
     constructor(private readonly adminService: AdminService) {}
     @Post()
+    @ApiOperation({ summary: 'Registrar un nuevo administrador' }) 
+    @ApiBody({ type: CreateAdminDto })
     @ApiResponse({status: 201, description: "Cuenta de administrador creada exitosamente"})
     @ApiResponse({status: 500, description: "Error interno del servidor"})
     async registerUser(@Body() userDto: CreateAdminDto): Promise<AdminDto | void> {
@@ -54,6 +61,8 @@ export class adminController{
     @Put("user/:id")
     @UseGuards(IsAdminGuard)
     @ApiBearerAuth()
+    @ApiOperation({ summary: 'Actualizar datos de un usuario por ID (Admin)' }) 
+    @ApiParam({ name: 'id', description: 'ID numérico del usuario a actualizar', type: Number }) 
     @ApiResponse({status: 200, description: "usuario actualizado exitosamente"})
     @ApiResponse({status: 401, description: "No autorizado"})
     @ApiResponse({status: 404, description: "Usuario no encontrado"})
@@ -64,8 +73,12 @@ export class adminController{
     }
 
     @Put("user/:id/role")
+    @UseGuards(IsAdminGuard) 
+    @ApiBearerAuth() 
     @ApiOperation({ summary: 'Actualizar el rol de un usuario por ID (Admin)' })
     @ApiResponse({status: 200, description: "Rol de usuario actualizado exitosamente"})
+    @ApiResponse({status: 401, description: "No autorizado"}) 
+    @ApiResponse({status: 403, description: "Prohibido (No es admin)"}) 
     @ApiResponse({status: 404, description: "Usuario no encontrado"})
     async updateRole(@Param("id") id: string, @Body() updateRoleDto: UpdateUserRoleDto): Promise<AdminDto> {
         const userId = Number(id);
@@ -73,8 +86,11 @@ export class adminController{
     }
     
     @Delete("user/:id")
+    @UseGuards(IsAdminGuard) 
+    @ApiBearerAuth() 
     @ApiOperation({ summary: 'Eliminar un usuario por ID (Admin)' })
-    @ApiResponse({status: 204, description: "Usuario eliminado exitosamente"})
+    @ApiResponse({status: 200, description: "Usuario eliminado exitosamente"}) 
+    @ApiResponse({status: 403, description: "Prohibido (No es admin)"}) 
     @ApiResponse({status: 404, description: "Usuario no encontrado"})
     async deleteUser(@Param("id") id: string): Promise<void> {
         const userId = Number(id);
@@ -85,8 +101,8 @@ export class adminController{
     @Get("user/list")
     @UseGuards(IsAdminGuard)
     @ApiBearerAuth()
-    @ApiResponse({status: 200, description: "Lista de usuarios obtenida exitosamente"})
-    @ApiResponse({status: 401, description: "No autorizado"})
+    @ApiOperation({ summary: 'Obtener lista de todos los usuarios (Admin)' }) 
+@ApiResponse({status: 200, description: "usuario actualizado exitosamente", type: AdminResponseDto})    @ApiResponse({status: 401, description: "No autorizado"})
     @ApiResponse({status: 500, description: "Error interno del servidor"})
  
     async getAllUsers(): Promise<AdminDto[]> {
@@ -97,7 +113,9 @@ export class adminController{
     @Get("user/:id")
     @UseGuards(IsAdminGuard)
     @ApiBearerAuth()
-    @ApiResponse({status: 200, description: "Usuario obtenido exitosamente"})
+    @ApiOperation({ summary: 'Obtener un usuario por ID (Admin)' })
+    @ApiParam({ name: 'id', description: 'ID numérico del usuario a buscar', type: Number }) 
+    @ApiResponse({status: 200, description: "Usuario obtenido exitosamente", type: AdminResponseDto}) 
     @ApiResponse({status: 401, description: "No autorizado"})
     @ApiResponse({status: 404, description: "Usuario no encontrado"})
     @ApiResponse({status: 500, description: "Error interno del servidor"})
